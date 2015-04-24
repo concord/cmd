@@ -1,6 +1,5 @@
 #!/bin/bash --login
-CCORD_DIR=$(dirname $(readlink -f "$0"))
-export PATH=${PATH}:${CCORD_DIR}
+
 
 case ${1} in
     graph)
