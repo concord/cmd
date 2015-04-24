@@ -191,8 +191,10 @@ def build_thrift_request(request):
 def register(request):
     req = build_thrift_request(request)
     print "Getting master ip from zookeeper"
-    (addr, port) = get_zookeeper_master_ip(
-        request["zookeeper_hosts"], request["zookeeper_path"]).split(":")
+    ip = get_zookeeper_master_ip(
+        request["zookeeper_hosts"], request["zookeeper_path"])
+    print "Seding computation to: ", ip
+    (addr, port) = ip.split(":")
     print "Initiating connection to scheduler"
     cli = get_sched_service_client(addr,int(port))
     print "Sending request to scheduler"
