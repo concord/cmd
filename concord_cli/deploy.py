@@ -77,9 +77,9 @@ def parseFile(filename, parser):
     if not data.has_key("exclude_compress_files"):
         data["exclude_compress_files"] = []
 
-    if not request["executable_name"] in request["compress_files"]:
+    if not data["executable_name"] in data["compress_files"]:
         print "Adding ", request["executable_name"], " to compress_files"
-        request["compress_files"].append(request["executable_name"])
+        data["compress_files"].append(data["executable_name"])
 
     return data
 
