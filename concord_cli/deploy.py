@@ -77,6 +77,10 @@ def parseFile(filename, parser):
     if not data.has_key("exclude_compress_files"):
         data["exclude_compress_files"] = []
 
+    if not request["executable_name"] in request["compress_files"]:
+        print "Adding ", request["executable_name"], " to compress_files"
+        request["compress_files"].append(request["executable_name"])
+
     return data
 
 def generate_options():
@@ -143,11 +147,9 @@ def tar_file_list(dir_list, skip_list):
 def build_thrift_request(request):
     tar_files = tar_file_list(request["compress_files"],
                               request["exclude_compress_files"])
-    if not request["executable_name"] in tar_files:
-        tar_files.append(os.path.abspath(request["executable_name"]))
+
     tar_name = os.path.abspath("concord_slug.tar.gz")
-    if os.path.exists(tar_name):
-        raise Exception(tar_name + " exists! please delete")
+    if os.path.exists(tar_name): print tar_name, " exists! overriding"
     if len(tar_files) == 0: raise Exception("Nothing to tar.gz :'(")
 
     with tarfile.open(tar_name, "w:gz") as tar:
