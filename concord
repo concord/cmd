@@ -13,11 +13,11 @@ case ${1} in
         ;;
     kill)
         shift
-        python -m concord_cli/kill_tasky "$@"
+        python -m concord_cli/kill_task "$@"
         ;;
     scale)
         shift
-        python -m concord_cli/scaley "$@"
+        python -m concord_cli/scale "$@"
         ;;
     trace)
         shift
