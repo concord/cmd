@@ -1,33 +1,27 @@
 #!/bin/bash --login
-ORIG=${PWD}
 CCORD_DIR=$(dirname $(readlink -f "$0"))
 export PATH=${PATH}:${CCORD_DIR}
-source ${CCORD_DIR}/.env/bin/activate
 
 case ${1} in
     graph)
         shift
-        python ${CCORD_DIR}/print_graph.py "$@"
+        python concord_cli/print_graph "$@"
         ;;
     deploy)
         shift
-        python  ${CCORD_DIR}/deploy.py "$@"
+        python -m concord_cli/deploy "$@"
         ;;
     kill)
         shift
-        python ${CCORD_DIR}/kill_task.py "$@"
+        python -m concord_cli/kill_tasky "$@"
         ;;
     scale)
         shift
-        python ${CCORD_DIR}/scale.py "$@"
+        python -m concord_cli/scaley "$@"
         ;;
     trace)
         shift
-        python ${CCORD_DIR}/tracer.py "$@"
-        ;;
-    install)
-        shift
-        sudo python ${CCORD_DIR}/setup.py install
+        python -m concord_cli/tracer "$@"
         ;;
     *)
         echo "Usage: "

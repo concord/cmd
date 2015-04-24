@@ -2,7 +2,7 @@
 import thrift
 import json
 from optparse import OptionParser
-from utils import *
+from concord_cli.utils import *
 
 def generate_options():
     usage = "usage: %prog [options] arg"

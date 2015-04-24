@@ -17,11 +17,11 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(version='0.1',
       description='python concord command line tools',
-      scripts=['concord']
+      scripts=['concord'],
       author='concord systems',
       author_email='hello@rbonut.io',
-      packages=find_packages(),
-      url='http://concord.io'
+      packages=find_packages('.'),
+      url='http://concord.io',
       install_requires=reqs,
       test_suite="tests",
 )

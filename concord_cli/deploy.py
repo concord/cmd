@@ -41,8 +41,8 @@ import json
 import tarfile
 from optparse import OptionParser
 from kazoo.client import KazooClient
-from generated.concord.internal.thrift.ttypes import *
-from utils import *
+from concord_cli.generated.concord.internal.thrift.ttypes import *
+from concord_cli.utils import *
 
 
 

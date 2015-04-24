@@ -1,8 +1,8 @@
 import json
 from thrift import Thrift
 from kazoo.client import KazooClient
-from generated.concord.internal.thrift.ttypes import *
-from generated.concord.internal.thrift import (
+from concord_cli.generated.concord.internal.thrift.ttypes import *
+from concord_cli.generated.concord.internal.thrift import (
     BoltTraceAggregatorService,
     BoltSchedulerService
 )

@@ -2,7 +2,7 @@
 from optparse import OptionParser
 from graphviz import Digraph
 from kazoo.client import KazooClient
-from generated.concord.internal.thrift.ttypes import *
+from concord_cli.generated.concord.internal.thrift.ttypes import *
 
 import json
 import logging
@@ -10,7 +10,7 @@ import logging
 from thrift.protocol import TJSONProtocol, TBinaryProtocol
 from thrift.transport import TTransport
 
-from utils import *
+from concord_cli.utils import *
 
 def generate_options():
     usage = "usage: %prog [options] arg"
