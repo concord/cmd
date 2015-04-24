@@ -32,7 +32,7 @@ def scale(options):
     print "Sending request to scheduler"
     try:
         cli.scaleComputation(options.name, options.instances)
-    except thrift.Thrift.TApplicationException as e:
+    except BoltError as e:
         print "Error scaling: ", e
     print "Done sending request to server"
 
