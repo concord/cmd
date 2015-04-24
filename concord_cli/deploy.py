@@ -102,6 +102,11 @@ def tar_file_list(dir_list, skip_list):
     if dir_list is None: raise Exception("Invalid dir_list for taring")
     if skip_list is None: raise Exception("Invalid skip_list for taring")
 
+    dir_list = set(dir_list)
+    dir_list = list(dir_list)
+    skip_list = set(skip_list)
+    skip_list = list(skip_list)
+
     retval = []
     real_tar_dirs = []
     skip_directories = []
