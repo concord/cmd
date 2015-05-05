@@ -45,7 +45,7 @@ from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.utils import *
 
 DEFAULTS = dict(
-    mem = 2048,
+    mem = 1024,
     update_binary = True,
     disk = 10240,
     cpus = 1,
