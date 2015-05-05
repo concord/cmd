@@ -44,7 +44,19 @@ from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.utils import *
 
-
+DEFAULTS = dict(
+    mem = 1024,
+    update_binary = True,
+    disk = 10240,
+    cpus = 1,
+    instances = 1,
+    execute_as_user = "",
+    environment_variables = [],
+    executable_arguments = [],
+    framework_v_module = "",
+    framework_logging_level = 0,
+    exclude_compress_files = [],
+)
 
 def parseFile(filename, parser):
     data = {}
@@ -59,29 +71,15 @@ def parseFile(filename, parser):
         if not data.has_key(k):
             parser.error("Please specify: " + k + ", parsed file: " + contents)
 
+    conf = DEFAULTS.copy()
+    conf.update(data)
+
     print "Contents parsed: ", contents
-    if not data.has_key("mem"): data["mem"] = 2048
-    if not data.has_key("update_binary"): data["update_binary"] = True
-    if not data.has_key("disk"): data["disk"] = 10240
-    if not data.has_key("cpus"): data["cpus"] = 1
-    if not data.has_key("instances"): data["instances"] = 1
-    if not data.has_key("execute_as_user"): data["execute_as_user"] = ""
-    if not data.has_key("environment_variables"):
-        data["environment_variables"] = []
-    if not data.has_key("executable_arguments"):
-        data["executable_arguments"] = []
-    if not data.has_key("framework_v_module"):
-        data["framework_v_module"] = ""
-    if not data.has_key("framework_logging_level"):
-        data["framework_logging_level"] = 0
-    if not data.has_key("exclude_compress_files"):
-        data["exclude_compress_files"] = []
-
-    if not data["executable_name"] in data["compress_files"]:
+    if not conf["executable_name"] in conf["compress_files"]:
         print "Adding ", request["executable_name"], " to compress_files"
-        data["compress_files"].append(data["executable_name"])
+        conf["compress_files"].append(conf["executable_name"])
 
-    return data
+    return conf
 
 def generate_options():
     usage = "usage: %prog [options] arg"
