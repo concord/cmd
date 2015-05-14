@@ -4,7 +4,7 @@
 case ${1} in
     graph)
         shift
-        python concord_cli/print_graph "$@"
+        python -m concord_cli/print_graph "$@"
         ;;
     deploy)
         shift
