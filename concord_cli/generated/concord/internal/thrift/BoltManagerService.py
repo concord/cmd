@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py:json,utf8string
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -190,12 +190,12 @@ class setEnvironmentVar_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.value = iprot.readString();
+          self.value = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -210,11 +210,11 @@ class setEnvironmentVar_args:
     oprot.writeStructBegin('setEnvironmentVar_args')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.value is not None:
       oprot.writeFieldBegin('value', TType.STRING, 2)
-      oprot.writeString(self.value)
+      oprot.writeString(self.value.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

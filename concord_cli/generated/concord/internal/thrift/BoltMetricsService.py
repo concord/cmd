@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py:json,utf8string
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -302,7 +302,7 @@ class gauge_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -322,7 +322,7 @@ class gauge_args:
     oprot.writeStructBegin('gauge_args')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.val is not None:
       oprot.writeFieldBegin('val', TType.I64, 2)
@@ -446,7 +446,7 @@ class timer_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -466,7 +466,7 @@ class timer_args:
     oprot.writeStructBegin('timer_args')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.duration is not None:
       oprot.writeFieldBegin('duration', TType.I64, 2)
@@ -590,7 +590,7 @@ class histogram_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -610,7 +610,7 @@ class histogram_args:
     oprot.writeStructBegin('histogram_args')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.measure is not None:
       oprot.writeFieldBegin('measure', TType.I64, 2)
@@ -734,7 +734,7 @@ class sum_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -754,7 +754,7 @@ class sum_args:
     oprot.writeStructBegin('sum_args')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.counter is not None:
       oprot.writeFieldBegin('counter', TType.I64, 2)

@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py:json,utf8string
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -477,7 +477,7 @@ class getComputationSlug_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.computationName = iprot.readString();
+          self.computationName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -492,7 +492,7 @@ class getComputationSlug_args:
     oprot.writeStructBegin('getComputationSlug_args')
     if self.computationName is not None:
       oprot.writeFieldBegin('computationName', TType.STRING, 1)
-      oprot.writeString(self.computationName)
+      oprot.writeString(self.computationName.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -755,7 +755,7 @@ class scaleComputation_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.computationName = iprot.readString();
+          self.computationName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -775,7 +775,7 @@ class scaleComputation_args:
     oprot.writeStructBegin('scaleComputation_args')
     if self.computationName is not None:
       oprot.writeFieldBegin('computationName', TType.STRING, 1)
-      oprot.writeString(self.computationName)
+      oprot.writeString(self.computationName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.instances is not None:
       oprot.writeFieldBegin('instances', TType.I64, 2)
@@ -896,7 +896,7 @@ class killTask_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.taskId = iprot.readString();
+          self.taskId = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -911,7 +911,7 @@ class killTask_args:
     oprot.writeStructBegin('killTask_args')
     if self.taskId is not None:
       oprot.writeFieldBegin('taskId', TType.STRING, 1)
-      oprot.writeString(self.taskId)
+      oprot.writeString(self.taskId.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

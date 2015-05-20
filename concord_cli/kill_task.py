@@ -37,7 +37,7 @@ def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     validate_options(options,parser)
-    scale(options)
+    kill(options)
 
 if __name__ == "__main__":
     main()

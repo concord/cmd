@@ -56,6 +56,7 @@ DEFAULTS = dict(
     framework_v_module = "",
     framework_logging_level = 0,
     exclude_compress_files = [],
+    docker_container = "",
 )
 
 def parseFile(filename, parser):
@@ -184,6 +185,7 @@ def build_thrift_request(request):
     req.taskHelper.folder = os.path.dirname(
         os.path.abspath(request["executable_name"]))
     req.taskHelper.user = request["execute_as_user"]
+    req.taskHelper.dockerContainer = request["docker_container"]
     return req
 
 def register(request):
@@ -191,7 +193,7 @@ def register(request):
     print "Getting master ip from zookeeper"
     ip = get_zookeeper_master_ip(
         request["zookeeper_hosts"], request["zookeeper_path"])
-    print "Seding computation to: ", ip
+    print "Sending computation to: ", ip
     (addr, port) = ip.split(":")
     print "Initiating connection to scheduler"
     cli = get_sched_service_client(addr,int(port))

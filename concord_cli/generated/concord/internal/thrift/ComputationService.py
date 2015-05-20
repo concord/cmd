@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py:json,utf8string
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -553,7 +553,7 @@ class boltProcessTimer_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.key = iprot.readString();
+          self.key = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -573,7 +573,7 @@ class boltProcessTimer_args:
     oprot.writeStructBegin('boltProcessTimer_args')
     if self.key is not None:
       oprot.writeFieldBegin('key', TType.STRING, 1)
-      oprot.writeString(self.key)
+      oprot.writeString(self.key.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.time is not None:
       oprot.writeFieldBegin('time', TType.I64, 2)
