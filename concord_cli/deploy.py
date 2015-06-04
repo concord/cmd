@@ -77,7 +77,7 @@ def parseFile(filename, parser):
 
     print "Contents parsed: ", contents
     if not conf["executable_name"] in conf["compress_files"]:
-        print "Adding ", request["executable_name"], " to compress_files"
+        print "Adding ", conf["executable_name"], " to compress_files"
         conf["compress_files"].append(conf["executable_name"])
 
     return conf
