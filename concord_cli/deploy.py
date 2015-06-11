@@ -12,6 +12,7 @@ Example of configuration file
         "file1.py",
         "file2.cpp"
     ],
+    "docker_container": "concord/concord",
     "fetch_url": "",
     "mem": 2048,
     "disk":"10240",
@@ -169,7 +170,7 @@ def build_thrift_request(request):
     req.taskHelper.frameworkLoggingLevel = request["framework_logging_level"]
     req.taskHelper.frameworkVModule = request["framework_v_module"]
     req.taskHelper.folder = os.path.dirname(
-        os.path.abspath(request["executable_name"]))
+        os.path.relpath(request["executable_name"]))
     req.taskHelper.user = request["execute_as_user"]
     req.taskHelper.dockerContainer = request["docker_container"]
     return req
