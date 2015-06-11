@@ -37,6 +37,7 @@ Example of configuration file
 """
 
 import os
+import re
 import json
 import tarfile
 from optparse import OptionParser
@@ -97,57 +98,42 @@ def validate_options(options, parser):
     if not options.config:
         parser.error("need to specify config file")
 
-def tar_file_list(dir_list, skip_list):
-    if dir_list is None: raise Exception("Invalid dir_list for taring")
-    if skip_list is None: raise Exception("Invalid skip_list for taring")
+def tar_file_list(white_list, black_list):
+    """
+    Add files/dirs in the white_list. When you encounter something in the
+    blacklist, exclude it. This is useful when adding a subdirectory containing
+    many files, some of which you wish to exclude. The black_list should be
+    formatted as regular expressions.
+    """
 
-    dir_list = set(dir_list)
-    dir_list = list(dir_list)
-    skip_list = set(skip_list)
-    skip_list = list(skip_list)
+    # dedupe
+    white_list = set(white_list)
+    black_list = set(black_list)
+    black_list = map(re.compile, black_list)
 
-    retval = []
-    real_tar_dirs = []
-    skip_directories = []
-    skip_files = []
-    for d in skip_list:
-        if not os.path.exists(d): continue
+    # result
+    file_list = []
 
-        f = os.path.abspath(d)
-        if os.path.isdir(f):
-            skip_directories.append(f)
-        elif os.path.isfile(f):
-            skip_files.append(f)
+    # check a file against the blacklist
+    def not_on_black_list(path):
+        return reduce(lambda memo, x: memo and x.match(path) == None,
+                black_list,
+                True)
 
-    for d in dir_list:
-        if not os.path.exists(d):
-            print "File for comrpessing: ", d, " does not exist"
-            continue
+    # iterate through a set of subdirectories, filtering by blacklist
+    def iterate_files(path):
+        if os.path.isfile(path):
+            return [path]
+        else:
+            files = map(lambda x: iterate_files(path + '/' + x), os.listdir(path))
+            files = reduce(lambda x, y: x + y, files, [])
+            return filter(not_on_black_list, files)
 
-        f = os.path.abspath(d)
-        if os.path.dirname(f) in skip_directories: continue
-        if f in skip_files: continue
-
-        if os.path.isfile(f):
-            retval.append(f)
-        elif os.path.isdir(f):
-            real_tar_dirs.append(f)
-
-    for traverse_dir in real_tar_dirs:
-        if traverse_dir in skip_directories: continue
-        for root, dirs, files in os.walk(traverse_dir):
-            checked_dir = False
-            for file in files:
-                file = os.path.abspath(file)
-                if not checked_dir:
-                    checked_dir = True
-                    if os.path.dirname(file) in skip_directories: break;
-
-                print "Examining: ", file
-                if not file in skip_files: retval.append(file)
-
-    return retval
-
+    # flat map `iterate_files` over the list of files/dirs to include
+    return reduce(lambda memo, x: memo + iterate_files(x),
+            white_list,
+            [])
+            
 def build_thrift_request(request):
     tar_files = tar_file_list(request["compress_files"],
                               request["exclude_compress_files"])
