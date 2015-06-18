@@ -33,7 +33,7 @@ Example of configuration file
     "computation_name": "word-count-source",
     "update_binary": true,
     "execute_as_user": "agallego",
-
+    "docker_container": "concord/client_devbox"
 }
 """
 
@@ -61,14 +61,28 @@ DEFAULTS = dict(
     docker_container = "",
 )
 
+def validate_json_raw_config(dictionary, parser):
+    valid_keys = ["executable_arguments", "compress_files",
+                  "docker_container", "fetch_url", "mem", "disk",
+                  "zookeeper_path", "cpus", "framework_v_module",
+                  "instances", "framework_logging_level",
+                  "environment_variables", "zookeeper_hosts",
+                  "executable_name", "exclude_compress_files",
+                  "computation_name", "update_binary",
+                  "execute_as_user", "docker_container"]
+    for k in dictionary:
+        if k not in valid_keys:
+            parser.error("Key is not a valid concord request key: " + str(k))
+
+
 def parseFile(filename, parser):
     data = {}
     with open(filename) as data_file:
         data = json.load(data_file)
 
+    validate_json_raw_config(data, parser)
     reqs = ['compress_files', 'executable_name', 'computation_name',
             'zookeeper_hosts', 'zookeeper_path']
-
     contents = json.dumps(data, indent=4, separators=(',', ': '))
     for k in reqs:
         if not data.has_key(k):
@@ -77,7 +91,6 @@ def parseFile(filename, parser):
     conf = DEFAULTS.copy()
     conf.update(data)
 
-    print "Contents parsed: ", contents
     if not conf["executable_name"] in conf["compress_files"]:
         print "Adding ", conf["executable_name"], " to compress_files"
         conf["compress_files"].append(conf["executable_name"])
@@ -134,8 +147,9 @@ def tar_file_list(white_list, black_list):
     return reduce(lambda memo, x: memo + iterate_files(x),
             white_list,
             [])
-            
+
 def build_thrift_request(request):
+    print "JSON Request: ", json.dumps(request, indent=4, separators=(',', ': '))
     tar_files = tar_file_list(request["compress_files"],
                               request["exclude_compress_files"])
 
@@ -161,7 +175,6 @@ def build_thrift_request(request):
     req.cpus = request["cpus"]
     req.mem = request["mem"]
     req.disk = request["disk"]
-    req.slug = slug
     req.forceUpdateBinary = request["update_binary"]
     req.taskHelper = ExecutorTaskInfoHelper()
     req.taskHelper.execName = request["executable_name"]
@@ -173,6 +186,8 @@ def build_thrift_request(request):
         os.path.relpath(request["executable_name"]))
     req.taskHelper.user = request["execute_as_user"]
     req.taskHelper.dockerContainer = request["docker_container"]
+    print "Thrift Request: ", req
+    req.slug = slug
     return req
 
 def register(request):
@@ -180,9 +195,10 @@ def register(request):
     print "Getting master ip from zookeeper"
     ip = get_zookeeper_master_ip(
         request["zookeeper_hosts"], request["zookeeper_path"])
-    print "Sending computation to: ", ip
     (addr, port) = ip.split(":")
-    print "Initiating connection to scheduler"
+
+    print "Sending computation to: ", ip
+
     cli = get_sched_service_client(addr,int(port))
     print "Sending request to scheduler"
     cli.deployComputation(req)
