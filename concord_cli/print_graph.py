@@ -3,7 +3,7 @@ from optparse import OptionParser
 from graphviz import Digraph
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
-from operator import attrgetter;
+from operator import attrgetter
 
 import json
 import logging
@@ -75,11 +75,9 @@ def printdot(options):
                              "fontname":"Arial",
                              "fontsize":"16"})
     meta = getmeta(options.zookeeper)
-    for key in meta.computations:
-        comp1 = meta.computations[key]
-        for key2 in meta.computations:
+    for key, comp1 in meta.iteritems():
+        for key2, comp2 in meta.iteritems():
             if key == key2: continue
-            comp2 = meta.computations[key2]
             print_edge(comp1, comp2, dot)
 
     print "Graph generated, rendering now"
