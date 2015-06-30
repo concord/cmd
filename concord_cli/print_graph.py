@@ -67,20 +67,19 @@ def print_edge(comp1, comp2, dot):
                     dot.edge(node2.taskId, node1.taskId,
                              label=print_single_stream(streamMetadata))
 
-def print_dot(options):
+def print_dot(meta, filename):
     dot = Digraph(comment='Concord Systems',
                   node_attr={"shape":"rectangle",
                              "align":"left",
                              "fontname":"Arial",
                              "fontsize":"16"})
-    meta = getmeta(options.zookeeper)
-    for key, comp1 in meta.iteritems():
-        for key2, comp2 in meta.iteritems():
+    for key, comp1 in meta.computations.iteritems():
+        for key2, comp2 in meta.computations.iteritems():
             if key == key2: continue
             print_edge(comp1, comp2, dot)
 
     print "Graph generated, rendering now"
-    dot.render(options.filename, view=True, cleanup=True)
+    dot.render(filename, view=True, cleanup=True)
 
 
 def main():
@@ -88,9 +87,9 @@ def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     if not options.zookeeper:
-        parse.error("need to specify zookeeper addr")
+        parser.error("need to specify zookeeper addr")
 
-    print_dot(options)
+    print_dot(getmeta(options.zookeeper), options.filename)
 
 if __name__ == "__main__":
     main()
