@@ -62,13 +62,12 @@ def print_edge(comp1, comp2, dot):
         if streamMetadata.name in map(attrgetter('name'), comp2.ostreams):
             for node1 in comp1.nodes:
                 for node2 in comp2.nodes:
-                    print "EDGE!: ", node2.taskId, " -> ", node1.taskId
                     dot.node(node1.taskId, print_streams(node1))
                     dot.node(node2.taskId, print_physical(node2))
                     dot.edge(node2.taskId, node1.taskId,
                              label=print_single_stream(streamMetadata))
 
-def printdot(options):
+def print_dot(options):
     dot = Digraph(comment='Concord Systems',
                   node_attr={"shape":"rectangle",
                              "align":"left",
@@ -91,7 +90,7 @@ def main():
     if not options.zookeeper:
         parse.error("need to specify zookeeper addr")
 
-    printdot(options)
+    print_dot(options)
 
 if __name__ == "__main__":
     main()

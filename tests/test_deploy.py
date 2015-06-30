@@ -14,12 +14,6 @@ class StubParser:
 
 class TestDeployScript(unittest.TestCase):
 
-    def create_test_directories(self):
-        # Create temporary dir and populate it
-
-
-        return tmp_dir
-
     def setUp(self):
         self.requiredKeys = ['compress_files', 'executable_name', 'computation_name',
                              'zookeeper_hosts', 'zookeeper_path']
@@ -31,6 +25,7 @@ class TestDeployScript(unittest.TestCase):
                           "update_binary", "execute_as_user",
                           "docker_container"]
         self.filename = 'test_deploy_file'
+        self.improperFormatFilename = 'test_deploy_file_incorrect'
         self.stub = StubParser()
 
     def test_validate_json_raw_config(self):
@@ -67,6 +62,12 @@ class TestDeployScript(unittest.TestCase):
 
 
     def test_parse_file(self):
+        # Assert that parser fails if file isn't in JSON format
+        self.assertRaises(ValueError,
+                          parseFile,
+                          test_filepath(self.improperFormatFilename),
+                          self.stub)
+
         # Read test configuration file
         data = {}
         abs_path = test_filepath(self.filename)
@@ -125,15 +126,16 @@ class TestDeployScript(unittest.TestCase):
         total_files = map(prepend_dirname, total_files)
         successful = map(prepend_dirname, successful)
 
-        # Create new files from fake data
-        for f in total_files:
-            create_temporary_file(f)
+        try:
+            # Create new files from fake data
+            for f in total_files:
+                create_temporary_file(f)
 
-        # Assert that only elements on the white list remain
-        all_include = tar_file_list(white_list, black_list)
-        all_include.sort()
-        successful.sort()
-        self.assertListEqual(all_include, successful)
-
-        # Remove temporary directory and all of its related content
-        shutil.rmtree(temp_dirname)
+            # Assert that only elements on the white list remain
+            all_include = tar_file_list(white_list, black_list)
+            all_include.sort()
+            successful.sort()
+            self.assertListEqual(all_include, successful)
+        finally:
+            # Remove temporary directory and all of its related content
+            shutil.rmtree(temp_dirname)
