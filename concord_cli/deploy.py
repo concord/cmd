@@ -62,17 +62,27 @@ DEFAULTS = dict(
 )
 
 def validate_json_raw_config(dictionary, parser):
-    valid_keys = ["executable_arguments", "compress_files",
-                  "docker_container", "fetch_url", "mem", "disk",
-                  "zookeeper_path", "cpus", "framework_v_module",
-                  "instances", "framework_logging_level",
-                  "environment_variables", "zookeeper_hosts",
-                  "executable_name", "exclude_compress_files",
-                  "computation_name", "update_binary",
-                  "execute_as_user", "docker_container"]
+    valid_keys = ["executable_arguments", "docker_container",
+                  "fetch_url", "mem", "disk", "cpus",
+                  "framework_v_module", "instances",
+                  "framework_logging_level", "environment_variables",
+                  "zookeeper_hosts", "exclude_compress_files",
+                  "update_binary", "execute_as_user",
+                  "docker_container"]
+    reqs = ['compress_files', 'executable_name', 'computation_name',
+            'zookeeper_hosts', 'zookeeper_path']
+
+    all_keys = list(valid_keys)
+    all_keys.extend(reqs)
+
     for k in dictionary:
-        if k not in valid_keys:
+        if k not in all_keys:
             parser.error("Key is not a valid concord request key: " + str(k))
+
+    for k in reqs:
+        if not dictionary.has_key(k):
+            contents = json.dumps(dictionary, indent=4, separators=(',', ': '))
+            parser.error("Please specify: " + k + ", parsed file: " + contents)
 
 
 def parseFile(filename, parser):
@@ -81,12 +91,6 @@ def parseFile(filename, parser):
         data = json.load(data_file)
 
     validate_json_raw_config(data, parser)
-    reqs = ['compress_files', 'executable_name', 'computation_name',
-            'zookeeper_hosts', 'zookeeper_path']
-    contents = json.dumps(data, indent=4, separators=(',', ': '))
-    for k in reqs:
-        if not data.has_key(k):
-            parser.error("Please specify: " + k + ", parsed file: " + contents)
 
     conf = DEFAULTS.copy()
     conf.update(data)
@@ -125,9 +129,6 @@ def tar_file_list(white_list, black_list):
     black_list = set(black_list)
     black_list = map(re.compile, black_list)
 
-    # result
-    file_list = []
-
     # check a file against the blacklist
     def not_on_black_list(path):
         return reduce(lambda memo, x: memo and x.match(path) == None,
@@ -137,7 +138,10 @@ def tar_file_list(white_list, black_list):
     # iterate through a set of subdirectories, filtering by blacklist
     def iterate_files(path):
         if os.path.isfile(path):
-            return [path]
+            if not_on_black_list(path):
+                return [path]
+            else:
+                return []
         else:
             files = map(lambda x: iterate_files(path + '/' + x), os.listdir(path))
             files = reduce(lambda x, y: x + y, files, [])

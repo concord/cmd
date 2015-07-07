@@ -3,6 +3,7 @@ from optparse import OptionParser
 from graphviz import Digraph
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
+from operator import attrgetter
 
 import json
 import logging
@@ -56,30 +57,29 @@ def print_single_stream(s):
 def print_streams(comp):
     return json.dumps(comp, default=lambda o: o.__dict__, indent=4)
 
+def print_edge(comp1, comp2, dot):
+    for streamMetadata in comp1.istreams:
+        if streamMetadata.name in map(attrgetter('name'), comp2.ostreams):
+            for node1 in comp1.nodes:
+                for node2 in comp2.nodes:
+                    dot.node(node1.taskId, print_streams(node1))
+                    dot.node(node2.taskId, print_physical(node2))
+                    dot.edge(node2.taskId, node1.taskId,
+                             label=print_single_stream(streamMetadata))
 
-def printdot(options):
+def print_dot(meta, filename):
     dot = Digraph(comment='Concord Systems',
                   node_attr={"shape":"rectangle",
                              "align":"left",
                              "fontname":"Arial",
                              "fontsize":"16"})
-    meta = getmeta(options.zookeeper)
-    for key in meta.computations:
-        comp1 = meta.computations[key]
-        for key2 in meta.computations:
+    for key, comp1 in meta.computations.iteritems():
+        for key2, comp2 in meta.computations.iteritems():
             if key == key2: continue
-            comp2 = meta.computations[key2]
-            for item in comp1.istreams:
-                if item in comp2.ostreams:
-                    for node1 in comp1.nodes:
-                        for node2 in comp2.nodes:
-                            print "EDGE!: ", node2.taskId, " -> ", node1.taskId
-                            dot.node(node1.taskId, print_streams(node1))
-                            dot.node(node2.taskId, print_physical(node2))
-                            dot.edge(node2.taskId, node1.taskId,
-                                     label=print_single_stream(item))
+            print_edge(comp1, comp2, dot)
+
     print "Graph generated, rendering now"
-    dot.render(options.filename, view=True, cleanup=True)
+    dot.render(filename, view=True, cleanup=True)
 
 
 def main():
@@ -87,9 +87,9 @@ def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     if not options.zookeeper:
-        parse.error("need to specify zookeeper addr")
+        parser.error("need to specify zookeeper addr")
 
-    printdot(options)
+    print_dot(getmeta(options.zookeeper), options.filename)
 
 if __name__ == "__main__":
     main()
