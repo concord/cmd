@@ -16,6 +16,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 #thrift -out generated --gen  py:json,utf8string  concord/concord/thrift/bolt.thrift"
 
 setup(version='0.1',
+      name='concord',
       description='python concord command line tools',
       scripts=['concord'],
       author='concord systems',
