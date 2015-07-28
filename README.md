@@ -4,7 +4,7 @@ Command line tools for concord.io.
 
 ```
     # To install:
-    pip install git+https://github.com/concord/cmd.git#egg=concord --upgrade
+    pip install concord
 ```
 
 All Rights Reserved.
