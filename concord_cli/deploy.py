@@ -194,28 +194,27 @@ def build_thrift_request(request):
     req.slug = slug
     return req
 
-def register(request):
-    req = build_thrift_request(request)
-    print "Getting master ip from zookeeper"
-    ip = get_zookeeper_master_ip(
-        request["zookeeper_hosts"], request["zookeeper_path"])
-    (addr, port) = ip.split(":")
+def register(request, config):
+    with ContextDirMgr(config):
+        req = build_thrift_request(request)
+        print "Getting master ip from zookeeper"
+        ip = get_zookeeper_master_ip(
+            request["zookeeper_hosts"], request["zookeeper_path"])
+        (addr, port) = ip.split(":")
 
-    print "Sending computation to: ", ip
+        print "Sending computation to: ", ip
 
-    cli = get_sched_service_client(addr,int(port))
-    print "Sending request to scheduler"
-    cli.deployComputation(req)
-    print "Done sending request to server"
-    print "Verify with the mesos host: ", addr, " that the service is running"
-
+        cli = get_sched_service_client(addr,int(port))
+        print "Sending request to scheduler"
+        cli.deployComputation(req)
+        print "Done sending request to server"
+        print "Verify with the mesos host: ", addr, " that the service is running"
 
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     validate_options(options,parser)
-    os.chdir(os.path.dirname(os.path.abspath(options.config)))
-    register(parseFile(options.config, parser))
+    register(parseFile(options.config, parser), options.config)
 
 if __name__ == "__main__":
     main()
