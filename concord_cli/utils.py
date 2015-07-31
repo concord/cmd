@@ -40,20 +40,20 @@ def thrift_to_json(thrift_struct):
             sort_keys=True, indent=4)
 
 def get_zookeeper_master_ip(zkurl, zkpath):
-    logging.info("Connecting to:%s" % zkurl)
+    logger.info("Connecting to:%s" % zkurl)
     zk = KazooClient(hosts=zkurl)
     ip = ""
     try:
-        logging.debug("Starting zk connection")
+        logger.debug("Starting zk connection")
         zk.start()
-        logging.debug("Serializing TopologyMetadata() from /bolt")
+        logger.debug("Serializing TopologyMetadata() from /bolt")
         data, stat = zk.get(zkpath + "/masterip")
-        logging.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
+        logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
         ip = str(data)
     except Exception as e:
-        logging.error("Error: %s" % e)
+        logger.error("Error: %s" % e)
     finally:
-        logging.debug("Closing zk connection")
+        logger.debug("Closing zk connection")
         zk.stop()
     return ip
 

@@ -28,18 +28,18 @@ def validate_options(options, parser):
     else: options.instances = int(options.instances)
 
 def scale(options):
-    logging.info("Getting master ip from zookeeper")
+    logger.info("Getting master ip from zookeeper")
     ip = get_zookeeper_master_ip(options.zookeeper, options.zk_path)
-    logging.info("Found leader at: %s" % ip)
+    logger.info("Found leader at: %s" % ip)
     (addr, port) = ip.split(":")
-    logging.debug("Initiating connection to scheduler")
+    logger.debug("Initiating connection to scheduler")
     cli = get_sched_service_client(addr,int(port))
-    logging.debug("Sending request to scheduler")
+    logger.debug("Sending request to scheduler")
     try:
         cli.scaleComputation(options.name, options.instances)
     except BoltError as e:
-        logging.error("Error scaling: %s", e)
-    logging.info("Done sending request to server")
+        logger.error("Error scaling: %s", e)
+    logger.info("Done sending request to server")
 
 
 def main():

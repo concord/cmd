@@ -38,11 +38,11 @@ def validate_options(options, parser):
         parser.error("need to specify scheduler_address")
 
 def gen_trace(options):
-    logging.info("what is my ip? %s" % options.scheduler)
+    logger.info("what is my ip? %s" % options.scheduler)
     (addr, port) = options.scheduler.split(":")
     trace_cli = get_trace_service_client(addr, 11219)
-    logging.info("about to get trace id: %s" % options.trace_id)
-    logging.debug(dir(trace_cli))
+    logger.info("about to get trace id: %s" % options.trace_id)
+    logger.debug(dir(trace_cli))
     spans = trace_cli.getTrace(long(options.trace_id))
     dot = Digraph(comment='Concord Systems',
                   format='svg',
@@ -102,7 +102,7 @@ def gen_trace(options):
             else:
                 dot.edge(parent,child,label='unknown')
 
-    logging.info("Graph generated, rendering now")
+    logger.info("Graph generated, rendering now")
     dot.render(options.filename, view=True, cleanup=True)
 
 
