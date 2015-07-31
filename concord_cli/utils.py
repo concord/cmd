@@ -1,3 +1,4 @@
+import os
 import json
 from thrift import Thrift
 from kazoo.client import KazooClient
@@ -12,6 +13,17 @@ from thrift.protocol import (
 from thrift.transport import (
     TSocket,TTransport
 )
+
+class ContextDirMgr:
+    def __init__(self, path):
+        self.new_dir = os.path.dirname(os.path.abspath(path))
+
+    def __enter__(self):
+        self.old_dir = os.getcwd()
+        os.chdir(self.new_dir)
+
+    def __exit__(self, value, type, traceback):
+        os.chdir(self.old_dir)
 
 def bytes_to_thrift(bytes, thrift_struct):
     transportIn = TTransport.TMemoryBuffer(bytes)

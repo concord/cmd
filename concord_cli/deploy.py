@@ -41,10 +41,15 @@ import os
 import re
 import json
 import tarfile
+import logging
 from optparse import OptionParser
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.utils import *
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 DEFAULTS = dict(
     mem = 256,
@@ -96,7 +101,7 @@ def parseFile(filename, parser):
     conf.update(data)
 
     if not conf["executable_name"] in conf["compress_files"]:
-        print "Adding ", conf["executable_name"], " to compress_files"
+        logger.debug("Adding %s to compress_files" % conf["executable_name"])
         conf["compress_files"].append(conf["executable_name"])
 
     return conf
@@ -153,26 +158,26 @@ def tar_file_list(white_list, black_list):
             [])
 
 def build_thrift_request(request):
-    print "JSON Request: ", json.dumps(request, indent=4, separators=(',', ': '))
+    logger.debug("JSON Request: %s" % json.dumps(request, indent=4, separators=(',', ': ')))
     tar_files = tar_file_list(request["compress_files"],
                               request["exclude_compress_files"])
 
     tar_name = os.path.abspath("concord_slug.tar.gz")
-    if os.path.exists(tar_name): print tar_name, " exists! overriding"
+    if os.path.exists(tar_name): logger.debug("%s exists! overriding" % tar_name)
     if len(tar_files) == 0: raise Exception("Nothing to tar.gz :'(")
 
     with tarfile.open(tar_name, "w:gz") as tar:
         for name in tar_files:
-            print "Adding tarfile: ", name
+            logger.debug("Adding tarfile: %s" % name)
             tar.add(name)
 
-    print "Reading slug into memory"
+    logger.debug("Reading slug into memory")
     slug = open(tar_name, "rb").read()
     if os.path.exists(tar_name):
-        print "Removing slug", tar_name
+        logger.debug("Removing slug %s", tar_name)
         os.remove(tar_name)
 
-    print "Making request object"
+    logger.debug("Making request object")
     req = BoltComputationRequest()
     req.name = request["computation_name"]
     req.instances = request["instances"]
@@ -190,32 +195,31 @@ def build_thrift_request(request):
         os.path.relpath(request["executable_name"]))
     req.taskHelper.user = request["execute_as_user"]
     req.taskHelper.dockerContainer = request["docker_container"]
-    print "Thrift Request: ", req
+    logger.debug("Thrift Request: %s" % req)
     req.slug = slug
     return req
 
-def register(request):
-    req = build_thrift_request(request)
-    print "Getting master ip from zookeeper"
-    ip = get_zookeeper_master_ip(
-        request["zookeeper_hosts"], request["zookeeper_path"])
-    (addr, port) = ip.split(":")
+def register(request, config):
+    with ContextDirMgr(config):
+        req = build_thrift_request(request)
+        logger.debug("Getting master ip from zookeeper")
+        ip = get_zookeeper_master_ip(
+            request["zookeeper_hosts"], request["zookeeper_path"])
+        (addr, port) = ip.split(":")
 
-    print "Sending computation to: ", ip
+        logger.info("Sending computation to: %s" % ip)
 
-    cli = get_sched_service_client(addr,int(port))
-    print "Sending request to scheduler"
-    cli.deployComputation(req)
-    print "Done sending request to server"
-    print "Verify with the mesos host: ", addr, " that the service is running"
-
+        cli = get_sched_service_client(addr,int(port))
+        logger.debug("Sending request to scheduler")
+        cli.deployComputation(req)
+        logger.debug("Done sending request to server")
+        logger.info("Verify with the mesos host: %s that the service is running" % addr)
 
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     validate_options(options,parser)
-    os.chdir(os.path.dirname(os.path.abspath(options.config)))
-    register(parseFile(options.config, parser))
+    register(parseFile(options.config, parser), options.config)
 
 if __name__ == "__main__":
     main()

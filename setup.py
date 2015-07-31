@@ -16,7 +16,7 @@ reqs = [
 ]
 
 
-setup(version='0.1.0',
+setup(version='0.1.1',
       name='concord',
       description='python concord command line tools',
       scripts=['concord'],
