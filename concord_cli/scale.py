@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 import thrift
 import json
+import logging
 from optparse import OptionParser
 from concord_cli.utils import *
+
+logging.basicConfig()
+logger = logging.getLogger('cmd.scale')
+logger.setLevel(logging.INFO)
 
 def generate_options():
     usage = "usage: %prog [options] arg"
@@ -23,18 +28,18 @@ def validate_options(options, parser):
     else: options.instances = int(options.instances)
 
 def scale(options):
-    print "Getting master ip from zookeeper"
+    logging.info("Getting master ip from zookeeper")
     ip = get_zookeeper_master_ip(options.zookeeper, options.zk_path)
-    print "Found leader at: ", ip
+    logging.info("Found leader at: %s" % ip)
     (addr, port) = ip.split(":")
-    print "Initiating connection to scheduler"
+    logging.debug("Initiating connection to scheduler")
     cli = get_sched_service_client(addr,int(port))
-    print "Sending request to scheduler"
+    logging.debug("Sending request to scheduler")
     try:
         cli.scaleComputation(options.name, options.instances)
     except BoltError as e:
-        print "Error scaling: ", e
-    print "Done sending request to server"
+        logging.error("Error scaling: %s", e)
+    logging.info("Done sending request to server")
 
 
 def main():

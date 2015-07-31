@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from thrift import Thrift
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
@@ -13,6 +14,10 @@ from thrift.protocol import (
 from thrift.transport import (
     TSocket,TTransport
 )
+
+logging.basicConfig()
+logger = logging.getLogger('cmd.utils')
+logger.setLevel(logging.INFO)
 
 class ContextDirMgr:
     def __init__(self, path):
@@ -35,20 +40,20 @@ def thrift_to_json(thrift_struct):
             sort_keys=True, indent=4)
 
 def get_zookeeper_master_ip(zkurl, zkpath):
-    print "Connecting to:", zkurl
+    logging.info("Connecting to:%s" % zkurl)
     zk = KazooClient(hosts=zkurl)
     ip = ""
     try:
-        print "Starting zk connection"
+        logging.debug("Starting zk connection")
         zk.start()
-        print "Serializing TopologyMetadata() from /bolt"
+        logging.debug("Serializing TopologyMetadata() from /bolt")
         data, stat = zk.get(zkpath + "/masterip")
-        print "Stattus of 'getting' " + zkpath + "/masterip: ", stat
+        logging.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
         ip = str(data)
     except Exception as e:
-        print "Error: ", e
+        logging.error("Error: %s" % e)
     finally:
-        print "Closing zk connection"
+        logging.debug("Closing zk connection")
         zk.stop()
     return ip
 

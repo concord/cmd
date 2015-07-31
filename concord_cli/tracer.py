@@ -12,6 +12,9 @@ from thrift.transport import TTransport
 
 from concord_cli.utils import *
 
+logging.basicConfig()
+logger = logging.getLogger('cmd.tracer')
+logger.setLevel(logging.INFO)
 
 def generate_options():
     usage = "usage: %prog [options] arg"
@@ -35,11 +38,11 @@ def validate_options(options, parser):
         parser.error("need to specify scheduler_address")
 
 def gen_trace(options):
-    print "what is my ip? ", options.scheduler
+    logging.info("what is my ip? %s" % options.scheduler)
     (addr, port) = options.scheduler.split(":")
     trace_cli = get_trace_service_client(addr, 11219)
-    print "about to get trace id: ", options.trace_id
-    print dir(trace_cli)
+    logging.info("about to get trace id: %s" % options.trace_id)
+    logging.debug(dir(trace_cli))
     spans = trace_cli.getTrace(long(options.trace_id))
     dot = Digraph(comment='Concord Systems',
                   format='svg',
@@ -99,7 +102,7 @@ def gen_trace(options):
             else:
                 dot.edge(parent,child,label='unknown')
 
-    print "Graph generated, rendering now"
+    logging.info("Graph generated, rendering now")
     dot.render(options.filename, view=True, cleanup=True)
 
 

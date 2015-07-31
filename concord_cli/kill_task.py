@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 import thrift
 import json
+import logging
 from optparse import OptionParser
 from concord_cli.utils import *
+
+logging.basicConfig()
+logger = logging.getLogger('cmd.kill_task')
+logger.setLevel(logging.INFO)
 
 def generate_options():
     usage = "usage: %prog [options] arg"
@@ -20,17 +25,17 @@ def validate_options(options, parser):
 
 
 def kill(options):
-    print "Getting master ip from zookeeper"
+    logger.info("Getting master ip from zookeeper")
     ip = get_zookeeper_master_ip(options.zookeeper, options.zk_path)
-    print "Found leader at: ", ip
+    logger.info("Found leader at: %s" % ip)
     (addr, port) = ip.split(":")
-    print "Initiating connection to scheduler"
+    logger.info("Initiating connection to scheduler")
     cli = get_sched_service_client(addr,int(port))
-    print "Sending request to scheduler"
+    logger.info("Sending request to scheduler")
     try: cli.killTask(options.task_id)
     except thrift.Thrift.TApplicationException as e:
-        print "Error killing task: ", e
-    print "Done sending request to server"
+        logger.error("Error killing task: %s" % str(e))
+    logger.info("Done sending request to server")
 
 
 def main():
