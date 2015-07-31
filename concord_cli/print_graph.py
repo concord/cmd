@@ -13,6 +13,10 @@ from thrift.transport import TTransport
 
 from concord_cli.utils import *
 
+logging.basicConfig()
+logger = logging.getLogger('cmd.print_graph')
+logger.setLevel(logging.INFO)
+
 def generate_options():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
@@ -29,20 +33,20 @@ def generate_options():
 
 
 def getmeta(zkurl):
-    print "Connecting to:", zkurl
+    logger.info("Connecting to:%s" % zkurl)
     zk = KazooClient(hosts=zkurl)
     meta = TopologyMetadata()
     try:
-        print "Starting zk connection"
+        logger.debug("Starting zk connection")
         zk.start()
-        print "Serializing TopologyMetadata() from /bolt"
+        logger.debug("Serializing TopologyMetadata() from /bolt")
         data, stat = zk.get("/bolt")
-        print "Stattus of 'getting' /bolt: ", stat
+        logger.debug("Status of 'getting' /bolt: %s" % str(stat))
         bytes_to_thrift(data, meta)
     except Exception as e:
-        print "Error: ", e
+        logger.exception(e)
     finally:
-        print "Closing zk connection"
+        logger.debug("Closing zk connection")
         zk.stop()
 
     return meta
@@ -68,6 +72,10 @@ def print_edge(comp1, comp2, dot):
                              label=print_single_stream(streamMetadata))
 
 def print_dot(meta, filename):
+    if meta == None or meta.computations == None:
+        logger.error('No graph to trace')
+        return
+
     dot = Digraph(comment='Concord Systems',
                   node_attr={"shape":"rectangle",
                              "align":"left",
@@ -78,12 +86,11 @@ def print_dot(meta, filename):
             if key == key2: continue
             print_edge(comp1, comp2, dot)
 
-    print "Graph generated, rendering now"
+    logger.info("Graph generated, rendering now")
     dot.render(filename, view=True, cleanup=True)
 
 
 def main():
-    logging.basicConfig()
     parser = generate_options()
     (options, args) = parser.parse_args()
     if not options.zookeeper:

@@ -48,7 +48,7 @@ from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.utils import *
 
 logging.basicConfig()
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('cmd.deploy')
 logger.setLevel(logging.INFO)
 
 DEFAULTS = dict(
