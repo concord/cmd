@@ -34,7 +34,8 @@ def kill(options):
     logger.info("Sending request to scheduler")
     try: cli.killTask(options.task_id)
     except thrift.Thrift.TApplicationException as e:
-        logger.error("Error killing task: %s" % str(e))
+        logger.error("Error killing task:%s" % options.task_id)
+        logger.exception(e)
     logger.info("Done sending request to server")
 
 

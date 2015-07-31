@@ -38,7 +38,8 @@ def scale(options):
     try:
         cli.scaleComputation(options.name, options.instances)
     except BoltError as e:
-        logger.error("Error scaling: %s", e)
+        logger.error("Error scaling:%s" % options.name)
+        logger.exception(e)
     logger.info("Done sending request to server")
 
 

@@ -51,7 +51,7 @@ def get_zookeeper_master_ip(zkurl, zkpath):
         logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
         ip = str(data)
     except Exception as e:
-        logger.error("Error: %s" % e)
+        logger.exception(e)
     finally:
         logger.debug("Closing zk connection")
         zk.stop()

@@ -44,7 +44,7 @@ def getmeta(zkurl):
         logger.debug("Status of 'getting' /bolt: %s" % str(stat))
         bytes_to_thrift(data, meta)
     except Exception as e:
-        logger.error("Error: %s" % e)
+        logger.exception(e)
     finally:
         logger.debug("Closing zk connection")
         zk.stop()
