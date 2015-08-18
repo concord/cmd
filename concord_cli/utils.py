@@ -57,6 +57,26 @@ def get_zookeeper_master_ip(zkurl, zkpath):
         zk.stop()
     return ip
 
+def get_zookeeper_metadata(zkurl):
+    logger.info("Connecting to: %s" % zkurl)
+    zk = KazooClient(hosts=zkurl)
+    meta = TopologyMetadata()
+    try:
+        logger.debug("Starting zk connection")
+        zk.start()
+        logger.debug("Serializing TopologyMetadata() from /bolt")
+        data, stat = zk.get("/bolt")
+        logger.debug("Status of 'getting' /bolt: %s" % str(stat))
+        bytes_to_thrift(data, meta)
+    except Exception as e:
+        logger.exception(e)
+        return None
+    finally:
+        logger.debug("Closing zk connection")
+        zk.stop()
+
+    return meta
+
 def tproto(ip, port):
     socket = TSocket.TSocket(ip, port)
     transport = TTransport.TFramedTransport(socket)
@@ -74,3 +94,6 @@ def get_trace_service_client(ip, port):
     client = BoltTraceAggregatorService.Client(protocol)
     transport.open()
     return client
+
+def flatten(xs):
+    return reduce(lambda m, x: m + x, xs,[])

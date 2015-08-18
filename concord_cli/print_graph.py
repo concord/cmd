@@ -31,27 +31,6 @@ def generate_options():
                       action="store", dest="filename")
     return parser
 
-
-def getmeta(zkurl):
-    logger.info("Connecting to:%s" % zkurl)
-    zk = KazooClient(hosts=zkurl)
-    meta = TopologyMetadata()
-    try:
-        logger.debug("Starting zk connection")
-        zk.start()
-        logger.debug("Serializing TopologyMetadata() from /bolt")
-        data, stat = zk.get("/bolt")
-        logger.debug("Status of 'getting' /bolt: %s" % str(stat))
-        bytes_to_thrift(data, meta)
-    except Exception as e:
-        logger.exception(e)
-    finally:
-        logger.debug("Closing zk connection")
-        zk.stop()
-
-    return meta
-
-
 def print_physical(node):
     return json.dumps(node, default=lambda o: o.__dict__, indent=4)
 
@@ -96,7 +75,7 @@ def main():
     if not options.zookeeper:
         parser.error("need to specify zookeeper addr")
 
-    print_dot(getmeta(options.zookeeper), options.filename)
+    print_dot(get_zookeeper_metadata(options.zookeeper), options.filename)
 
 if __name__ == "__main__":
     main()
