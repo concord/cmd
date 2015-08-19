@@ -42,7 +42,7 @@ import re
 import json
 import tarfile
 import logging
-from optparse import OptionParser
+import argparse
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.utils import *
@@ -110,14 +110,9 @@ def parseFile(filename, parser):
     return conf
 
 def generate_options():
-    usage = "usage: %prog [options] arg"
-    parser = OptionParser(usage)
-    parser.add_option("--zookeeper", dest="zookeeper",
-                      action="store", help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
-    parser.add_option("--config-file", dest="config",
-                      action="store", help="i.e: ./src/config.json")
-    parser.add_option("--zookeeper-path", help="zookeeper path, i.e.: /bolt",
-                      default="/bolt", action="store", dest="zk_path")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", metavar="config-file", action="store",
+                        help="i.e: ./src/config.json")
     return parser
 
 def validate_options(options, parser):
@@ -220,7 +215,7 @@ def register(request, config):
 
 def main():
     parser = generate_options()
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
     validate_options(options,parser)
     register(parseFile(options.config, parser), options.config)
 
