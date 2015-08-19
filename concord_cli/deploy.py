@@ -91,6 +91,9 @@ def validate_json_raw_config(dictionary, parser):
 
 
 def parseFile(filename, parser):
+    if os.path.splitext(filename)[1] != '.json':
+        raise Exception('config file must end in .json')
+
     data = {}
     with open(filename) as data_file:
         data = json.load(data_file)
