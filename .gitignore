@@ -64,9 +64,6 @@ graph
 *.pdf
 *.svg
 
-<<<<<<< HEAD
-# config file
 .concord.cfg
-=======
 activate
->>>>>>> master
+
