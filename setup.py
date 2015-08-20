@@ -16,7 +16,11 @@ reqs = [
 ]
 
 
+<<<<<<< HEAD
 setup(version='0.1.4',
+=======
+setup(version='0.1.3',
+>>>>>>> master
       name='concord',
       description='python concord command line tools',
       scripts=['concord'],
