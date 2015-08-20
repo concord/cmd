@@ -63,3 +63,6 @@ local/
 graph
 *.pdf
 *.svg
+
+# config file
+.concord.cfg

@@ -2,6 +2,10 @@
 
 
 case ${1} in
+    config)
+        shift
+        python -m concord_cli/config "$@"
+        ;;
     graph)
         shift
         python -m concord_cli/print_graph "$@"
@@ -25,6 +29,6 @@ case ${1} in
     *)
         echo "Usage: "
         echo "concord [program] [flags] "
-        echo "concord (graph|kill|deploy|scale|trace) -h"
+        echo "concord (config|graph|kill|deploy|scale|trace) -h"
         ;;
 esac
