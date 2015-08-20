@@ -3,6 +3,7 @@ import json
 import logging
 from thrift import Thrift
 from kazoo.client import KazooClient
+from concord_cli.config import find_config
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.generated.concord.internal.thrift import (
     BoltTraceAggregatorService,
@@ -97,3 +98,11 @@ def get_trace_service_client(ip, port):
 
 def flatten(xs):
     return reduce(lambda m, x: m + x, xs,[])
+
+def default_options():
+    location = find_config(os.getcwd())
+    if location is None:
+        return {}
+    with open(location, 'r') as data_file:
+        config_data = json.load(data_file)
+    return config_data

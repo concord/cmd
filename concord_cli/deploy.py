@@ -118,6 +118,10 @@ def generate_options():
 def validate_options(options, parser):
     if not options.config:
         parser.error("need to specify config file")
+    config = default_options()
+    if config is not None:
+        options.zookeeper = ['zookeeper_hosts']
+        options.zk_path = ['zookeeper_path']
 
 def tar_file_list(white_list, black_list):
     """

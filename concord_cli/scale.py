@@ -13,41 +13,43 @@ def generate_options():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
     parser.add_option("--zookeeper-hosts", dest="zookeeper",
-                      action="store", help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
+                      default='localhost:2181', action="store",
+                      help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
     parser.add_option("--name", dest="name", action="store")
-    parser.add_option("--instances", dest="instances", action="store")
-    parser.add_option("--zookeeper-path", action="store", dest="zk_path")
+    parser.add_option("--instances", dest="instances", action="store", type=int)
+    parser.add_option("--zookeeper-path", action="store",
+                      dest="zk_path", default='/bolt')
     return parser
 
 def validate_options(options, parser):
+    config = default_options()
     if not options.name: parser.error("please specify --name")
-    if not options.zk_path: parser.error("please specify --zookeeper-path")
-    if not options.zookeeper: parser.error("please specify --zookeeper-hosts")
-
     if not options.instances: parser.error("please specify --instances")
-    else: options.instances = int(options.instances)
+    if config is not None:
+        options.zk_path = config['zookeeper_path']
+        options.zookeeper = config['zookeeper_hosts']
 
-def scale(options):
+def scale(name, instances, zk_path, zookeeper):
     logger.info("Getting master ip from zookeeper")
-    ip = get_zookeeper_master_ip(options.zookeeper, options.zk_path)
+    ip = get_zookeeper_master_ip(zookeeper, zk_path)
     logger.info("Found leader at: %s" % ip)
     (addr, port) = ip.split(":")
     logger.debug("Initiating connection to scheduler")
     cli = get_sched_service_client(addr,int(port))
     logger.debug("Sending request to scheduler")
     try:
-        cli.scaleComputation(options.name, options.instances)
+        cli.scaleComputation(name, instances)
     except BoltError as e:
-        logger.error("Error scaling:%s" % options.name)
+        logger.error("Error scaling:%s" % name)
         logger.exception(e)
     logger.info("Done sending request to server")
-
 
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
     validate_options(options,parser)
-    scale(options)
+    scale(options.name, options.instances,
+          options.zk_path, options.zookeeper)
 
 if __name__ == "__main__":
     main()

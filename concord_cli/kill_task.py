@@ -33,6 +33,14 @@ def generate_options():
                         ,action="store_true")
     return parser
 
+def validate_options(options, parser):
+    if options.all and options.task_id:
+        parser.error('You are using task_id and passing the all flag')
+    config = default_options()
+    if config is not None:
+        options.zookeeper_hosts = config['zookeeper_hosts']
+        options.zookeeper_path = config['zookeeper_path']
+
 def kill(zookeeper, zk_path, task_ids):
     if len(task_ids) == 0:
         logger.info('Kill received an empty list of task_ids')
@@ -166,16 +174,16 @@ def interactive_mode(zookeeper, zk_path):
 
 def main():
     parser = generate_options()
-    args = parser.parse_args()
-    if not args.task_id and not args.all:
-        interactive_mode(args.zookeeper_hosts, args.zookeeper_path)
-    elif args.all and args.task_id:
-        parser.error('You are using task_id and passing the all flag')
-    elif not args.all:
-        kill(args.zookeeper_hosts, args.zookeeper_path, args.task_id)
-    elif not args.task_id:
-        kill(args.zookeeper_hosts, args.zookeeper_path,
-             collect_taskids(args.zookeeper_hosts)
+    options = parser.parse_args()
+    validate_options(options, parser)
+
+    if not options.task_id and not options.all:
+        interactive_mode(options.zookeeper_hosts, options.zookeeper_path)
+    elif not options.all:
+        kill(options.zookeeper_hosts, options.zookeeper_path, options.task_id)
+    elif not options.task_id:
+        kill(options.zookeeper_hosts, options.zookeeper_path,
+             collect_taskids(options.zookeeper_hosts)
 )
 
 
