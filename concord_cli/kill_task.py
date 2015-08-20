@@ -16,7 +16,7 @@ def generate_options():
     parser.add_argument("-z"
                         ,"--zookeeper-path"
                         ,help="Path of concord topology on zk"
-                        ,default="/bolt"
+                        ,default="/concord"
                         ,action="store")
     parser.add_argument("-o"
                         ,"--zookeeper-hosts"
@@ -33,7 +33,7 @@ def generate_options():
                         ,action="store_true")
     return parser
 
-def kill(zookeeper, zk_path, *task_ids):
+def kill(zookeeper, zk_path, task_ids):
     if len(task_ids) == 0:
         logger.info('Kill received an empty list of task_ids')
         return
@@ -49,7 +49,9 @@ def kill(zookeeper, zk_path, *task_ids):
             logger.info('Sending request to kill task: %s', task_id)
             cli.killTask(task_id)
     except thrift.Thrift.TApplicationException as e:
+        leftover = task_ids[task_ids.index(task_id):]
         logger.error("Error killing task: %s" % task_id)
+        logger.error("Tasks that could not be killed... %s" % ", ".join(leftover))
         logger.exception(e)
     logger.info("Done sending request to server")
 
@@ -86,11 +88,11 @@ def parse_input(iterable, user_input):
     indicies = set(flatten(map(token_expand, tokens)))
 
     # Returns desired choices performing bounds check at the same time
-    def verify_index(index):
+    def fetch_index(index):
         if index < 1 or index > len(iterable):
             raise Exception('Index out of bounds')
         return iterable[index-1]
-    return map(verify_index, indicies)
+    return map(fetch_index, indicies)
 
 def prompt_selection(iterable, heading, printer):
     """ Takes 'iterable' and displays it in an ascii table using printable
@@ -156,14 +158,11 @@ def interactive_mode(zookeeper, zk_path):
 
     selection = meta.computations.values()
     user_path = [prompt_computations, prompt_nodes]
-    user_state = 0
-    while user_state < len(user_path):
-        current_action = user_path[user_state]
+    for current_action in user_path:
         selection = current_action(selection)
-        user_state = user_state + 1
 
     # Terminate selected node
-    kill(zookeeper, zk_path, *selection)
+    kill(zookeeper, zk_path, selection)
 
 def main():
     parser = generate_options()
@@ -176,7 +175,7 @@ def main():
         kill(args.zookeeper_hosts, args.zookeeper_path, args.task_id)
     elif not args.task_id:
         kill(args.zookeeper_hosts, args.zookeeper_path,
-             *collect_taskids(args.zookeeper_hosts)
+             collect_taskids(args.zookeeper_hosts)
 )
 
 
