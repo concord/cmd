@@ -1,5 +1,4 @@
 colorclass==1.2.0
-concord==0.1.2
 graphviz==0.4.3
 kazoo==2.0
 terminaltables==1.2.0

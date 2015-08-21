@@ -46,7 +46,7 @@ def get_zookeeper_master_ip(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
-        logger.debug("Serializing TopologyMetadata() from /bolt")
+        logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath + "/masterip")
         logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
         ip = str(data)
@@ -57,16 +57,16 @@ def get_zookeeper_master_ip(zkurl, zkpath):
         zk.stop()
     return ip
 
-def get_zookeeper_metadata(zkurl):
+def get_zookeeper_metadata(zkurl, zkpath):
     logger.info("Connecting to: %s" % zkurl)
     zk = KazooClient(hosts=zkurl)
     meta = TopologyMetadata()
     try:
         logger.debug("Starting zk connection")
         zk.start()
-        logger.debug("Serializing TopologyMetadata() from /bolt")
+        logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get("/bolt")
-        logger.debug("Status of 'getting' /bolt: %s" % str(stat))
+        logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
         bytes_to_thrift(data, meta)
     except Exception as e:
         logger.exception(e)

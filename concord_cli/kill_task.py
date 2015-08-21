@@ -55,9 +55,9 @@ def kill(zookeeper, zk_path, task_ids):
         logger.exception(e)
     logger.info("Done sending request to server")
 
-def collect_taskids(zookeeper):
+def collect_taskids(zookeeper, zk_path):
     """ Querys zk for topology metadata and returns a list of task_ids"""
-    meta = get_zookeeper_metadata(zookeeper)
+    meta = get_zookeeper_metadata(zookeeper, zk_path)
     if meta is None or len(meta.computations) == 0:
         return []
 
@@ -146,7 +146,7 @@ def interactive_mode(zookeeper, zk_path):
     """ presents to the user an easy to use prompt so that they may selectively
     search through computations and eventually choose a concord node to kill"""
     print 'Querying zookeeper for cluster topology...'
-    meta = get_zookeeper_metadata(zookeeper)
+    meta = get_zookeeper_metadata(zookeeper, zk_path)
 
     # Exit on failure, or if no computations exist
     if meta == None:
@@ -175,7 +175,7 @@ def main():
         kill(args.zookeeper_hosts, args.zookeeper_path, args.task_id)
     elif not args.task_id:
         kill(args.zookeeper_hosts, args.zookeeper_path,
-             collect_taskids(args.zookeeper_hosts)
+             collect_taskids(args.zookeeper_hosts, args.zookeeper_path)
 )
 
 
