@@ -1105,21 +1105,21 @@ class TopologyMetadata:
   """
   Attributes:
    - version
-   - hash
    - computations
+   - frameworkID
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.I32, 'version', None, 0, ), # 1
-    (2, TType.STRING, 'hash', None, None, ), # 2
-    (3, TType.MAP, 'computations', (TType.STRING,None,TType.STRUCT,(PhysicalComputationLayout, PhysicalComputationLayout.thrift_spec)), None, ), # 3
+    (2, TType.MAP, 'computations', (TType.STRING,None,TType.STRUCT,(PhysicalComputationLayout, PhysicalComputationLayout.thrift_spec)), None, ), # 2
+    (3, TType.STRING, 'frameworkID', None, None, ), # 3
   )
 
-  def __init__(self, version=thrift_spec[1][4], hash=None, computations=None,):
+  def __init__(self, version=thrift_spec[1][4], computations=None, frameworkID=None,):
     self.version = version
-    self.hash = hash
     self.computations = computations
+    self.frameworkID = frameworkID
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1136,11 +1136,6 @@ class TopologyMetadata:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.hash = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
         if ftype == TType.MAP:
           self.computations = {}
           (_ktype50, _vtype51, _size49 ) = iprot.readMapBegin()
@@ -1150,6 +1145,11 @@ class TopologyMetadata:
             _val55.read(iprot)
             self.computations[_key54] = _val55
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.frameworkID = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1166,17 +1166,17 @@ class TopologyMetadata:
       oprot.writeFieldBegin('version', TType.I32, 1)
       oprot.writeI32(self.version)
       oprot.writeFieldEnd()
-    if self.hash is not None:
-      oprot.writeFieldBegin('hash', TType.STRING, 2)
-      oprot.writeString(self.hash)
-      oprot.writeFieldEnd()
     if self.computations is not None:
-      oprot.writeFieldBegin('computations', TType.MAP, 3)
+      oprot.writeFieldBegin('computations', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.computations))
       for kiter56,viter57 in self.computations.items():
         oprot.writeString(kiter56)
         viter57.write(oprot)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.frameworkID is not None:
+      oprot.writeFieldBegin('frameworkID', TType.STRING, 3)
+      oprot.writeString(self.frameworkID)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1188,8 +1188,8 @@ class TopologyMetadata:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.version)
-    value = (value * 31) ^ hash(self.hash)
     value = (value * 31) ^ hash(self.computations)
+    value = (value * 31) ^ hash(self.frameworkID)
     return value
 
   def __repr__(self):
