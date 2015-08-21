@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -421,7 +421,7 @@ class getComputationSlug_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.computationName = iprot.readString();
+          self.computationName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -436,7 +436,7 @@ class getComputationSlug_args:
     oprot.writeStructBegin('getComputationSlug_args')
     if self.computationName is not None:
       oprot.writeFieldBegin('computationName', TType.STRING, 1)
-      oprot.writeString(self.computationName)
+      oprot.writeString(self.computationName.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -671,6 +671,150 @@ class registerComputation_result:
   def __ne__(self, other):
     return not (self == other)
 
+class scaleComputation_args:
+  """
+  Attributes:
+   - computationName
+   - instances
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'computationName', None, None, ), # 1
+    (2, TType.I64, 'instances', None, None, ), # 2
+  )
+
+  def __init__(self, computationName=None, instances=None,):
+    self.computationName = computationName
+    self.instances = instances
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.computationName = iprot.readString().decode('utf-8')
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.instances = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('scaleComputation_args')
+    if self.computationName is not None:
+      oprot.writeFieldBegin('computationName', TType.STRING, 1)
+      oprot.writeString(self.computationName.encode('utf-8'))
+      oprot.writeFieldEnd()
+    if self.instances is not None:
+      oprot.writeFieldBegin('instances', TType.I64, 2)
+      oprot.writeI64(self.instances)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.computationName)
+    value = (value * 31) ^ hash(self.instances)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class scaleComputation_result:
+  """
+  Attributes:
+   - e
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, e=None,):
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = BoltError()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('scaleComputation_result')
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class killTask_args:
   """
   Attributes:
@@ -696,7 +840,7 @@ class killTask_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.taskId = iprot.readString();
+          self.taskId = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -711,7 +855,7 @@ class killTask_args:
     oprot.writeStructBegin('killTask_args')
     if self.taskId is not None:
       oprot.writeFieldBegin('taskId', TType.STRING, 1)
-      oprot.writeString(self.taskId)
+      oprot.writeString(self.taskId.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
