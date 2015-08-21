@@ -47,7 +47,7 @@ def get_zookeeper_master_ip(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
-        logger.debug("Serializing TopologyMetadata() from /bolt")
+        logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath + "/masterip")
         logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
         ip = str(data)
@@ -58,16 +58,16 @@ def get_zookeeper_master_ip(zkurl, zkpath):
         zk.stop()
     return ip
 
-def get_zookeeper_metadata(zkurl):
+def get_zookeeper_metadata(zkurl, zkpath):
     logger.info("Connecting to: %s" % zkurl)
     zk = KazooClient(hosts=zkurl)
     meta = TopologyMetadata()
     try:
         logger.debug("Starting zk connection")
         zk.start()
-        logger.debug("Serializing TopologyMetadata() from /bolt")
-        data, stat = zk.get("/bolt")
-        logger.debug("Status of 'getting' /bolt: %s" % str(stat))
+        logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
+        data, stat = zk.get(zkpath)
+        logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
         bytes_to_thrift(data, meta)
     except Exception as e:
         logger.exception(e)
@@ -99,10 +99,14 @@ def get_trace_service_client(ip, port):
 def flatten(xs):
     return reduce(lambda m, x: m + x, xs,[])
 
-def default_options():
+def default_options(opts):
     location = find_config(os.getcwd())
     if location is None:
-        return {}
+        return
     with open(location, 'r') as data_file:
         config_data = json.load(data_file)
-    return config_data
+    opts_methods = dir(opts)
+    if 'zookeeper' in opts_methods:
+        opts.zookeepers = config_data['zookeeper_hosts']
+    if 'zk_path' in opts_methods:
+        opts.zk_path = config_data['zookeeper_path']

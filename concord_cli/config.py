@@ -5,7 +5,7 @@ from functools import partial
 
 CONFIG_FILENAME = '.concord.cfg'
 
-CONCORD_DEFAULTS = { 'zookeeper_path' : '/bolt',
+CONCORD_DEFAULTS = { 'zookeeper_path' : '/concord',
                      'zookeeper_hosts' : 'localhost:2181' }
 
 def generate_options():

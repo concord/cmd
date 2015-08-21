@@ -23,6 +23,9 @@ def generate_options():
     parser.add_option("-z", "--zookeeper", dest="zookeeper",
                       default="localhost:2181", action="store",
                       help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
+    parser.add_option("-p", "--zookeeper_path", dest="zk_path",
+                      help="zookeeper path, i.e.: /concord",
+                      action="store", default="/concord")
     parser.add_option("-v", "--verbose",
                       action="store_true", dest="verbose")
     parser.add_option("-q", "--quiet",
@@ -73,11 +76,10 @@ def print_dot(meta, filename):
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
-    config = default_options()
-    if config is not None:
-        options.zookeeper = config['zookeeper_hosts']
+    config = default_options(options)
 
-    print_dot(get_zookeeper_metadata(options.zookeeper), options.filename)
+    print_dot(get_zookeeper_metadata(options.zookeeper, options.zk_path),
+              options.filename)
 
 if __name__ == "__main__":
     main()

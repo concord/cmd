@@ -16,7 +16,7 @@ Example of configuration file
     "fetch_url": "",
     "mem": 2048,
     "disk":"10240",
-    "zookeeper_path": "/bolt",
+    "zookeeper_path": "/concord",
     "cpus": 4,
     "framework_v_module": "",
     "instances": 1,
@@ -118,10 +118,7 @@ def generate_options():
 def validate_options(options, parser):
     if not options.config:
         parser.error("need to specify config file")
-    config = default_options()
-    if config is not None:
-        options.zookeeper = ['zookeeper_hosts']
-        options.zk_path = ['zookeeper_path']
+    config = default_options(options)
 
 def tar_file_list(white_list, black_list):
     """
