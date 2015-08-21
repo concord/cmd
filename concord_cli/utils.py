@@ -47,6 +47,9 @@ def get_zookeeper_master_ip(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
+        if not zk.exists(zkpath):
+            logger.error('Path on zk doesn\'t exist')
+            return ip
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath + "/masterip")
         logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
@@ -65,6 +68,9 @@ def get_zookeeper_metadata(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
+        if not zk.exists(zkpath):
+            logger.error('Path on zk doesn\'t exist')
+            return None
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath)
         logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
