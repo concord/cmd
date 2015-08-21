@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -19,7 +19,9 @@ kDatabasePath = "/tmp"
 kDatabaseEntryTTL = 43200
 kDefaultBatchSize = 2048
 kDefaultTraceSampleEveryN = 1024
+kPrincipalComputationName = "principal_computation"
 kIncomingMessageQueueTopic = "incoming"
+kPrincipalTimerQueueTopic = "principal_timers"
 kOutgoingMessageQueueTopic = "outgoing"
 kQueueStreamNameToIdMapTopic = "stream_map"
 kMessageQueueWatermarkTopic = "watermarks"

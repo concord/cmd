@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -151,12 +151,12 @@ class BoltError(TException):
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.reason = iprot.readString();
+          self.reason = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.context = iprot.readString();
+          self.context = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -176,11 +176,11 @@ class BoltError(TException):
     oprot.writeStructBegin('BoltError')
     if self.reason is not None:
       oprot.writeFieldBegin('reason', TType.STRING, 1)
-      oprot.writeString(self.reason)
+      oprot.writeString(self.reason.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.context is not None:
       oprot.writeFieldBegin('context', TType.STRING, 2)
-      oprot.writeString(self.context)
+      oprot.writeString(self.context.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.time is not None:
       oprot.writeFieldBegin('time', TType.I64, 3)
@@ -242,7 +242,7 @@ class Endpoint:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.ip = iprot.readString();
+          self.ip = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -262,7 +262,7 @@ class Endpoint:
     oprot.writeStructBegin('Endpoint')
     if self.ip is not None:
       oprot.writeFieldBegin('ip', TType.STRING, 1)
-      oprot.writeString(self.ip)
+      oprot.writeString(self.ip.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.port is not None:
       oprot.writeFieldBegin('port', TType.I16, 2)
@@ -320,7 +320,7 @@ class StreamMetadata:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -340,7 +340,7 @@ class StreamMetadata:
     oprot.writeStructBegin('StreamMetadata')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.grouping is not None:
       oprot.writeFieldBegin('grouping', TType.I32, 2)
@@ -407,12 +407,12 @@ class ComputationMetadata:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.taskId = iprot.readString();
+          self.taskId = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -455,11 +455,11 @@ class ComputationMetadata:
     oprot.writeStructBegin('ComputationMetadata')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.taskId is not None:
       oprot.writeFieldBegin('taskId', TType.STRING, 2)
-      oprot.writeString(self.taskId)
+      oprot.writeString(self.taskId.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.istreams is not None:
       oprot.writeFieldBegin('istreams', TType.LIST, 3)
@@ -572,12 +572,12 @@ class ExecutorTaskInfoHelper:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.user = iprot.readString();
+          self.user = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.frameworkVModule = iprot.readString();
+          self.frameworkVModule = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -606,17 +606,17 @@ class ExecutorTaskInfoHelper:
           iprot.skip(ftype)
       elif fid == 8:
         if ftype == TType.STRING:
-          self.execName = iprot.readString();
+          self.execName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.STRING:
-          self.folder = iprot.readString();
+          self.folder = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 10:
         if ftype == TType.STRING:
-          self.computationAliasName = iprot.readString();
+          self.computationAliasName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 11:
@@ -624,7 +624,7 @@ class ExecutorTaskInfoHelper:
           self.clientArguments = []
           (_etype17, _size14) = iprot.readListBegin()
           for _i18 in xrange(_size14):
-            _elem19 = iprot.readString();
+            _elem19 = iprot.readString().decode('utf-8')
             self.clientArguments.append(_elem19)
           iprot.readListEnd()
         else:
@@ -634,14 +634,14 @@ class ExecutorTaskInfoHelper:
           self.environmentExtra = []
           (_etype23, _size20) = iprot.readListBegin()
           for _i24 in xrange(_size20):
-            _elem25 = iprot.readString();
+            _elem25 = iprot.readString().decode('utf-8')
             self.environmentExtra.append(_elem25)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 13:
         if ftype == TType.STRING:
-          self.dockerContainer = iprot.readString();
+          self.dockerContainer = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -660,11 +660,11 @@ class ExecutorTaskInfoHelper:
       oprot.writeFieldEnd()
     if self.user is not None:
       oprot.writeFieldBegin('user', TType.STRING, 2)
-      oprot.writeString(self.user)
+      oprot.writeString(self.user.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.frameworkVModule is not None:
       oprot.writeFieldBegin('frameworkVModule', TType.STRING, 3)
-      oprot.writeString(self.frameworkVModule)
+      oprot.writeString(self.frameworkVModule.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.scheduler is not None:
       oprot.writeFieldBegin('scheduler', TType.STRUCT, 4)
@@ -684,33 +684,33 @@ class ExecutorTaskInfoHelper:
       oprot.writeFieldEnd()
     if self.execName is not None:
       oprot.writeFieldBegin('execName', TType.STRING, 8)
-      oprot.writeString(self.execName)
+      oprot.writeString(self.execName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.folder is not None:
       oprot.writeFieldBegin('folder', TType.STRING, 9)
-      oprot.writeString(self.folder)
+      oprot.writeString(self.folder.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.computationAliasName is not None:
       oprot.writeFieldBegin('computationAliasName', TType.STRING, 10)
-      oprot.writeString(self.computationAliasName)
+      oprot.writeString(self.computationAliasName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.clientArguments is not None:
       oprot.writeFieldBegin('clientArguments', TType.LIST, 11)
       oprot.writeListBegin(TType.STRING, len(self.clientArguments))
       for iter26 in self.clientArguments:
-        oprot.writeString(iter26)
+        oprot.writeString(iter26.encode('utf-8'))
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.environmentExtra is not None:
       oprot.writeFieldBegin('environmentExtra', TType.LIST, 12)
       oprot.writeListBegin(TType.STRING, len(self.environmentExtra))
       for iter27 in self.environmentExtra:
-        oprot.writeString(iter27)
+        oprot.writeString(iter27.encode('utf-8'))
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dockerContainer is not None:
       oprot.writeFieldBegin('dockerContainer', TType.STRING, 13)
-      oprot.writeString(self.dockerContainer)
+      oprot.writeString(self.dockerContainer.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -790,12 +790,12 @@ class PhysicalComputationMetdata:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.taskId = iprot.readString();
+          self.taskId = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.slaveId = iprot.readString();
+          self.slaveId = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -836,11 +836,11 @@ class PhysicalComputationMetdata:
     oprot.writeStructBegin('PhysicalComputationMetdata')
     if self.taskId is not None:
       oprot.writeFieldBegin('taskId', TType.STRING, 1)
-      oprot.writeString(self.taskId)
+      oprot.writeString(self.taskId.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.slaveId is not None:
       oprot.writeFieldBegin('slaveId', TType.STRING, 2)
-      oprot.writeString(self.slaveId)
+      oprot.writeString(self.slaveId.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.cpus is not None:
       oprot.writeFieldBegin('cpus', TType.DOUBLE, 3)
@@ -925,7 +925,7 @@ class PhysicalComputationLayout:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -973,7 +973,7 @@ class PhysicalComputationLayout:
     oprot.writeStructBegin('PhysicalComputationLayout')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.istreams is not None:
       oprot.writeFieldBegin('istreams', TType.LIST, 2)
@@ -1105,21 +1105,21 @@ class TopologyMetadata:
   """
   Attributes:
    - version
-   - hash
    - computations
+   - frameworkID
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.I32, 'version', None, 0, ), # 1
-    (2, TType.STRING, 'hash', None, None, ), # 2
-    (3, TType.MAP, 'computations', (TType.STRING,None,TType.STRUCT,(PhysicalComputationLayout, PhysicalComputationLayout.thrift_spec)), None, ), # 3
+    (2, TType.MAP, 'computations', (TType.STRING,None,TType.STRUCT,(PhysicalComputationLayout, PhysicalComputationLayout.thrift_spec)), None, ), # 2
+    (3, TType.STRING, 'frameworkID', None, None, ), # 3
   )
 
-  def __init__(self, version=thrift_spec[1][4], hash=None, computations=None,):
+  def __init__(self, version=thrift_spec[1][4], computations=None, frameworkID=None,):
     self.version = version
-    self.hash = hash
     self.computations = computations
+    self.frameworkID = frameworkID
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1136,20 +1136,20 @@ class TopologyMetadata:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.hash = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
         if ftype == TType.MAP:
           self.computations = {}
           (_ktype50, _vtype51, _size49 ) = iprot.readMapBegin()
           for _i53 in xrange(_size49):
-            _key54 = iprot.readString();
+            _key54 = iprot.readString().decode('utf-8')
             _val55 = PhysicalComputationLayout()
             _val55.read(iprot)
             self.computations[_key54] = _val55
           iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.frameworkID = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -1166,17 +1166,17 @@ class TopologyMetadata:
       oprot.writeFieldBegin('version', TType.I32, 1)
       oprot.writeI32(self.version)
       oprot.writeFieldEnd()
-    if self.hash is not None:
-      oprot.writeFieldBegin('hash', TType.STRING, 2)
-      oprot.writeString(self.hash)
-      oprot.writeFieldEnd()
     if self.computations is not None:
-      oprot.writeFieldBegin('computations', TType.MAP, 3)
+      oprot.writeFieldBegin('computations', TType.MAP, 2)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.computations))
       for kiter56,viter57 in self.computations.items():
-        oprot.writeString(kiter56)
+        oprot.writeString(kiter56.encode('utf-8'))
         viter57.write(oprot)
       oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.frameworkID is not None:
+      oprot.writeFieldBegin('frameworkID', TType.STRING, 3)
+      oprot.writeString(self.frameworkID.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1188,8 +1188,8 @@ class TopologyMetadata:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.version)
-    value = (value * 31) ^ hash(self.hash)
     value = (value * 31) ^ hash(self.computations)
+    value = (value * 31) ^ hash(self.frameworkID)
     return value
 
   def __repr__(self):
@@ -1488,7 +1488,7 @@ class ComputationTx:
           self.timers = {}
           (_ktype65, _vtype66, _size64 ) = iprot.readMapBegin()
           for _i68 in xrange(_size64):
-            _key69 = iprot.readString();
+            _key69 = iprot.readString().decode('utf-8')
             _val70 = iprot.readI64();
             self.timers[_key69] = _val70
           iprot.readMapEnd()
@@ -1519,7 +1519,7 @@ class ComputationTx:
       oprot.writeFieldBegin('timers', TType.MAP, 3)
       oprot.writeMapBegin(TType.STRING, TType.I64, len(self.timers))
       for kiter72,viter73 in self.timers.items():
-        oprot.writeString(kiter72)
+        oprot.writeString(kiter72.encode('utf-8'))
         oprot.writeI64(viter73)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
@@ -1585,7 +1585,7 @@ class RichStream:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.computationName = iprot.readString();
+          self.computationName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -1615,7 +1615,7 @@ class RichStream:
       oprot.writeFieldEnd()
     if self.computationName is not None:
       oprot.writeFieldBegin('computationName', TType.STRING, 2)
-      oprot.writeString(self.computationName)
+      oprot.writeString(self.computationName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.endpoints is not None:
       oprot.writeFieldBegin('endpoints', TType.LIST, 3)
@@ -1695,7 +1695,7 @@ class BoltComputationRequest:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -1746,7 +1746,7 @@ class BoltComputationRequest:
     oprot.writeStructBegin('BoltComputationRequest')
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 1)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.instances is not None:
       oprot.writeFieldBegin('instances', TType.I64, 2)
@@ -1853,7 +1853,7 @@ class Annotation:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.key = iprot.readString();
+          self.key = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -1887,7 +1887,7 @@ class Annotation:
       oprot.writeFieldEnd()
     if self.key is not None:
       oprot.writeFieldBegin('key', TType.STRING, 3)
-      oprot.writeString(self.key)
+      oprot.writeString(self.key.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.value is not None:
       oprot.writeFieldBegin('value', TType.STRING, 4)
@@ -1976,7 +1976,7 @@ class Span:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.name = iprot.readString();
+          self.name = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 5:
@@ -2014,7 +2014,7 @@ class Span:
       oprot.writeFieldEnd()
     if self.name is not None:
       oprot.writeFieldBegin('name', TType.STRING, 4)
-      oprot.writeString(self.name)
+      oprot.writeString(self.name.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.annotations is not None:
       oprot.writeFieldBegin('annotations', TType.LIST, 5)

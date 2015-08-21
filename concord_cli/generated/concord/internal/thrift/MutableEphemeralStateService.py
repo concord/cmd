@@ -3,7 +3,7 @@
 #
 # DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 #
-#  options string: py
+#  options string: py:json,utf8strings
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
@@ -189,7 +189,7 @@ class setState_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.key = iprot.readString();
+          self.key = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -209,7 +209,7 @@ class setState_args:
     oprot.writeStructBegin('setState_args')
     if self.key is not None:
       oprot.writeFieldBegin('key', TType.STRING, 1)
-      oprot.writeString(self.key)
+      oprot.writeString(self.key.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.value is not None:
       oprot.writeFieldBegin('value', TType.STRING, 2)
@@ -330,7 +330,7 @@ class getState_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.key = iprot.readString();
+          self.key = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -345,7 +345,7 @@ class getState_args:
     oprot.writeStructBegin('getState_args')
     if self.key is not None:
       oprot.writeFieldBegin('key', TType.STRING, 1)
-      oprot.writeString(self.key)
+      oprot.writeString(self.key.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
