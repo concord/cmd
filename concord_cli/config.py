@@ -6,7 +6,8 @@ from functools import partial
 CONFIG_FILENAME = '.concord.cfg'
 
 CONCORD_DEFAULTS = { 'zookeeper_path' : '/concord',
-                     'zookeeper_hosts' : 'localhost:2181' }
+                     'zookeeper_hosts' : 'localhost:2181',
+                     'scheduler_address' : 'localhost:11219' }
 
 def generate_options():
     parser = argparse.ArgumentParser()
@@ -32,12 +33,13 @@ def generate_options():
 def find_config(src):
     """ recursively searches .. until it finds a file named CONFIG_FILENAME
     will return None in the case of no matches or the abspath if found"""
-    if src == '':
+    filepath = os.path.join(src, CONFIG_FILENAME)
+    if os.path.isfile(filepath):
+        return filepath
+    elif src == '/':
         return None
-    test_file = os.path.join(src, CONFIG_FILENAME)
-    if os.path.isfile(test_file):
-        return test_file
-    return find_config(src[0:src.rfind('/')])
+    else:
+        return find_config(os.path.dirname(src))
 
 def fetch_config(location, callback):
     filepath = find_config(location)

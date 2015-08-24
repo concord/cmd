@@ -116,3 +116,5 @@ def default_options(opts):
         opts.zookeepers = config_data['zookeeper_hosts']
     if 'zk_path' in opts_methods:
         opts.zk_path = config_data['zookeeper_path']
+    if 'scheduler' in opts_methods:
+        opts.scheduler = config_data['scheduler_address']
