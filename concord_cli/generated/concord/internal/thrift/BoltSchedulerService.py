@@ -39,14 +39,6 @@ class Iface:
     """
     pass
 
-  def scaleComputation(self, computationName, instances):
-    """
-    Parameters:
-     - computationName
-     - instances
-    """
-    pass
-
   def killTask(self, taskId):
     """
     Parameters:
@@ -157,39 +149,6 @@ class Client(Iface):
       raise result.e
     return
 
-  def scaleComputation(self, computationName, instances):
-    """
-    Parameters:
-     - computationName
-     - instances
-    """
-    self.send_scaleComputation(computationName, instances)
-    self.recv_scaleComputation()
-
-  def send_scaleComputation(self, computationName, instances):
-    self._oprot.writeMessageBegin('scaleComputation', TMessageType.CALL, self._seqid)
-    args = scaleComputation_args()
-    args.computationName = computationName
-    args.instances = instances
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_scaleComputation(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = scaleComputation_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.e is not None:
-      raise result.e
-    return
-
   def killTask(self, taskId):
     """
     Parameters:
@@ -229,7 +188,6 @@ class Processor(Iface, TProcessor):
     self._processMap["deployComputation"] = Processor.process_deployComputation
     self._processMap["getComputationSlug"] = Processor.process_getComputationSlug
     self._processMap["registerComputation"] = Processor.process_registerComputation
-    self._processMap["scaleComputation"] = Processor.process_scaleComputation
     self._processMap["killTask"] = Processor.process_killTask
 
   def process(self, iprot, oprot):
@@ -285,20 +243,6 @@ class Processor(Iface, TProcessor):
     except BoltError, e:
       result.e = e
     oprot.writeMessageBegin("registerComputation", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_scaleComputation(self, seqid, iprot, oprot):
-    args = scaleComputation_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = scaleComputation_result()
-    try:
-      self._handler.scaleComputation(args.computationName, args.instances)
-    except BoltError, e:
-      result.e = e
-    oprot.writeMessageBegin("scaleComputation", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()

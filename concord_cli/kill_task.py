@@ -13,13 +13,15 @@ logger.setLevel(logging.INFO)
 
 def generate_options():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-z"
-                        ,"--zookeeper-path"
+    parser.add_argument("-p"
+                        ,"--zk_path"
+                        ,metavar="zookeeper-path"
                         ,help="Path of concord topology on zk"
                         ,default="/concord"
                         ,action="store")
-    parser.add_argument("-o"
-                        ,"--zookeeper-hosts"
+    parser.add_argument("-z"
+                        ,"--zookeeper"
+                        ,metavar="zookeeper-hosts"
                         ,help="i.e: 1.2.3.4:2181,2.3.4.5:2181"
                         ,default="localhost:2181"
                         ,action="store")
@@ -32,6 +34,11 @@ def generate_options():
                         ,help="Kill all computations"
                         ,action="store_true")
     return parser
+
+def validate_options(options, parser):
+    if options.all and options.task_id:
+        parser.error('You are using task_id and passing the all flag')
+    config = default_options(options)
 
 def kill(zookeeper, zk_path, task_ids):
     if len(task_ids) == 0:
@@ -55,9 +62,9 @@ def kill(zookeeper, zk_path, task_ids):
         logger.exception(e)
     logger.info("Done sending request to server")
 
-def collect_taskids(zookeeper, zk_path):
+def collect_taskids(zookeeper, zkpath):
     """ Querys zk for topology metadata and returns a list of task_ids"""
-    meta = get_zookeeper_metadata(zookeeper, zk_path)
+    meta = get_zookeeper_metadata(zookeeper, zkpath)
     if meta is None or len(meta.computations) == 0:
         return []
 
@@ -166,16 +173,16 @@ def interactive_mode(zookeeper, zk_path):
 
 def main():
     parser = generate_options()
-    args = parser.parse_args()
-    if not args.task_id and not args.all:
-        interactive_mode(args.zookeeper_hosts, args.zookeeper_path)
-    elif args.all and args.task_id:
-        parser.error('You are using task_id and passing the all flag')
-    elif not args.all:
-        kill(args.zookeeper_hosts, args.zookeeper_path, args.task_id)
-    elif not args.task_id:
-        kill(args.zookeeper_hosts, args.zookeeper_path,
-             collect_taskids(args.zookeeper_hosts, args.zookeeper_path)
+    options = parser.parse_args()
+    validate_options(options, parser)
+
+    if not options.task_id and not options.all:
+        interactive_mode(options.zookeeper, options.zk_path)
+    elif not options.all:
+        kill(options.zookeeper, options.zk_path, options.task_id)
+    elif not options.task_id:
+        kill(options.zookeeper, options.zk_path,
+             collect_taskids(options.zookeeper, options.zk_path)
 )
 
 

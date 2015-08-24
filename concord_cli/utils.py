@@ -3,6 +3,7 @@ import json
 import logging
 from thrift import Thrift
 from kazoo.client import KazooClient
+from concord_cli.config import find_config
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.generated.concord.internal.thrift import (
     BoltTraceAggregatorService,
@@ -46,6 +47,9 @@ def get_zookeeper_master_ip(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
+        if not zk.exists(zkpath):
+            logger.error('Path on zk doesn\'t exist')
+            return ip
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath + "/masterip")
         logger.debug("Status of 'getting' %s/masterip: %s" % (zkpath, str(stat)))
@@ -64,8 +68,11 @@ def get_zookeeper_metadata(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
+        if not zk.exists(zkpath):
+            logger.error('Path on zk doesn\'t exist')
+            return None
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
-        data, stat = zk.get("/bolt")
+        data, stat = zk.get(zkpath)
         logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
         bytes_to_thrift(data, meta)
     except Exception as e:
@@ -97,3 +104,17 @@ def get_trace_service_client(ip, port):
 
 def flatten(xs):
     return reduce(lambda m, x: m + x, xs,[])
+
+def default_options(opts):
+    location = find_config(os.getcwd())
+    if location is None:
+        return
+    with open(location, 'r') as data_file:
+        config_data = json.load(data_file)
+    opts_methods = dir(opts)
+    if 'zookeeper' in opts_methods:
+        opts.zookeepers = config_data['zookeeper_hosts']
+    if 'zk_path' in opts_methods:
+        opts.zk_path = config_data['zookeeper_path']
+    if 'scheduler' in opts_methods:
+        opts.scheduler = config_data['scheduler_address']

@@ -19,12 +19,12 @@ logger.setLevel(logging.INFO)
 def generate_options():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
-    parser.add_option("--zookeeper", dest="zookeeper",
+    parser.add_option("--zookeeper", dest="zookeeper", default="localhost:2181",
                       action="store", help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
     parser.add_option("--file", help="output file",
                       default="trace_graph", action="store", dest="filename")
-    parser.add_option("--scheduler-path", help="zookeeper path, i.e.: /bolt",
-                      default="/bolt", action="store", dest="zk_path")
+    parser.add_option("--scheduler-path", help="zookeeper path, i.e.: /concord",
+                      default="/concord", action="store", dest="zk_path")
     parser.add_option("--trace-id", help="any trace id, i.e.: 1121345",
                       action="store", dest="trace_id")
     parser.add_option("--scheduler-address", help="i.e.: 1.2.3.4:11219",
@@ -32,6 +32,7 @@ def generate_options():
     return parser
 
 def validate_options(options, parser):
+    config = default_options(options)
     if not options.trace_id:
         parser.error("need to specify trace id")
     if not options.scheduler:

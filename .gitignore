@@ -64,4 +64,6 @@ graph
 *.pdf
 *.svg
 
+.concord.cfg
 activate
+
