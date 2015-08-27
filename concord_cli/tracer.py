@@ -32,7 +32,7 @@ def generate_options():
     return parser
 
 def validate_options(options, parser):
-    config = default_options(options)
+    default_options(options)
     if not options.trace_id:
         parser.error("need to specify trace id")
     if not options.scheduler:
