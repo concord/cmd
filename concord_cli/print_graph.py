@@ -76,7 +76,7 @@ def print_dot(meta, filename):
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
-    config = default_options(options)
+    default_options(options)
 
     print_dot(get_zookeeper_metadata(options.zookeeper, options.zk_path),
               options.filename)

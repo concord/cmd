@@ -3,7 +3,6 @@ import json
 import logging
 from thrift import Thrift
 from kazoo.client import KazooClient
-from concord_cli.config import find_config
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.generated.concord.internal.thrift import (
     BoltTraceAggregatorService,
@@ -105,16 +104,34 @@ def get_trace_service_client(ip, port):
 def flatten(xs):
     return reduce(lambda m, x: m + x, xs,[])
 
+def pairs_todict(kvpair_list):
+    """ Transform list -> dict i.e. [a=b, c=d] -> {'a':'b', 'c':'d'}"""
+    return None if kvpair_list is None else \
+    { k:v for k, v in map(lambda c: c.split('='), kvpair_list) }
+
+def find_config(src, config_file):
+    """ recursively searches .. until it finds a file named config_file
+    will return None in the case of no matches or the abspath if found"""
+    filepath = os.path.join(src, config_file)
+    if os.path.isfile(filepath):
+        return filepath
+    elif src == '/':
+        return None
+    else:
+        return find_config(os.path.dirname(src), config_file)
+
 def default_options(opts):
-    location = find_config(os.getcwd())
+    location = find_config(os.getcwd(), '.concord.cfg')
     if location is None:
         return
     with open(location, 'r') as data_file:
         config_data = json.load(data_file)
     opts_methods = dir(opts)
     if 'zookeeper' in opts_methods:
-        opts.zookeepers = config_data['zookeeper_hosts']
+        opts.zookeeper = config_data['zookeeper_hosts']
     if 'zk_path' in opts_methods:
         opts.zk_path = config_data['zookeeper_path']
     if 'scheduler' in opts_methods:
         opts.scheduler = config_data['scheduler_address']
+
+    return opts

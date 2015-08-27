@@ -38,7 +38,7 @@ def generate_options():
 def validate_options(options, parser):
     if options.all and options.task_id:
         parser.error('You are using task_id and passing the all flag')
-    config = default_options(options)
+    default_options(options)
 
 def kill(zookeeper, zk_path, task_ids):
     if len(task_ids) == 0:

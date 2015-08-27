@@ -118,7 +118,7 @@ def generate_options():
 def validate_options(options, parser):
     if not options.config:
         parser.error("need to specify config file")
-    config = default_options(options)
+    default_options(options)
 
 def tar_file_list(white_list, black_list):
     """
