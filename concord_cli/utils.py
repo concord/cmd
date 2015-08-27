@@ -19,6 +19,8 @@ logging.basicConfig()
 logger = logging.getLogger('cmd.utils')
 logger.setLevel(logging.INFO)
 
+CONCORD_FILENAME = '.concord.cfg'
+
 class ContextDirMgr:
     def __init__(self, path):
         self.new_dir = os.path.dirname(os.path.abspath(path))
@@ -121,7 +123,7 @@ def find_config(src, config_file):
         return find_config(os.path.dirname(src), config_file)
 
 def default_options(opts):
-    location = find_config(os.getcwd(), '.concord.cfg')
+    location = find_config(os.getcwd(), CONCORD_FILENAME)
     if location is None:
         return
     with open(location, 'r') as data_file:
@@ -133,5 +135,3 @@ def default_options(opts):
         opts.zk_path = config_data['zookeeper_path']
     if 'scheduler' in opts_methods:
         opts.scheduler = config_data['scheduler_address']
-
-    return opts

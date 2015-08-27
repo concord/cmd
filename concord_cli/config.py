@@ -5,7 +5,6 @@ import argparse
 from functools import partial
 from concord_cli.utils import *
 
-CONFIG_FILENAME = '.concord.cfg'
 CONCORD_DEFAULTS = { 'zookeeper_path' : '/concord',
                      'zookeeper_hosts' : 'localhost:2181',
                      'scheduler_address' : 'localhost:11219' }
@@ -16,7 +15,7 @@ def generate_options():
 
     # Init command takes two optional arguments 'location' and 'parameters'
     init_parser = subparser.add_parser('init', help='Create concord cli defaults')
-    init_parser.add_argument('-l', '--location', default="~",
+    init_parser.add_argument('-c', '--config', default="~",
                              help="location of settings file, defaults to ~")
     init_parser.add_argument('-p', '--parameters', nargs='+', type=str,
                              help='Custom cli defaults, i.e. k1=v1 k2=v2')
@@ -36,7 +35,7 @@ def generate_options():
 def fetch_config(location, callback, default_path=None):
     """ Attempts to find file starting at location. Upon success the file
     will be opened and contents passed into callback"""
-    filepath = find_config(location, CONFIG_FILENAME)
+    filepath = find_config(location, CONCORD_FILENAME)
     if filepath is None:
         print 'While searching recursively upwards (starting from %s), ' \
             'a configuration file could not be found...' % location
@@ -73,7 +72,7 @@ def init(location, new_defaults=None):
         inpt = raw_input('Overwrite? [y|n] ')
         return fpath if inpt == "y" else sys.exit(1)
 
-    default_path = os.path.join(os.path.expanduser(location), CONFIG_FILENAME)
+    default_path = os.path.join(os.path.expanduser(location), CONCORD_FILENAME)
     filepath = fetch_config(os.getcwd(), duplicate_prompt, default_path)
 
     if new_defaults is None:
@@ -104,7 +103,7 @@ def main():
     else:
         argsdict = pairs_todict(options.parameters)
         if options.which == 'init':
-            init(options.location, argsdict)
+            init(options.config, argsdict)
         elif options.which == 'set':
             fetch_config(os.getcwd(), partial(write_defaults, argsdict))
 
