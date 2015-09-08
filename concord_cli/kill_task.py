@@ -142,7 +142,7 @@ def prompt_computations(pcomp_layout):
                                  stream_metadata))
         return [pcomp_layout.name,
                 pretty_md(pcomp_layout.istreams),
-                pretty_md(pcomp_layout.ostreams)]
+                "\n".join(pcomp_layout.ostreams)]
 
     print '\nSelect a computation to inspect:'
     header = ['Computation name', 'istreams/grouping', 'ostreams/grouping']
