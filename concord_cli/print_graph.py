@@ -46,7 +46,7 @@ def print_streams(comp):
 
 def print_edge(comp1, comp2, dot):
     for streamMetadata in comp1.istreams:
-        if streamMetadata.name in map(attrgetter('name'), comp2.ostreams):
+        if streamMetadata.name in comp2.ostreams:
             for node1 in comp1.nodes:
                 for node2 in comp2.nodes:
                     dot.node(node1.taskId, print_streams(node1))
