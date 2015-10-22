@@ -39,6 +39,14 @@ class Iface:
     """
     pass
 
+  def scaleComputation(self, computationName, instances):
+    """
+    Parameters:
+     - computationName
+     - instances
+    """
+    pass
+
   def killTask(self, taskId):
     """
     Parameters:
@@ -124,7 +132,7 @@ class Client(Iface):
      - computation
     """
     self.send_registerComputation(computation)
-    self.recv_registerComputation()
+    return self.recv_registerComputation()
 
   def send_registerComputation(self, computation):
     self._oprot.writeMessageBegin('registerComputation', TMessageType.CALL, self._seqid)
@@ -143,6 +151,41 @@ class Client(Iface):
       iprot.readMessageEnd()
       raise x
     result = registerComputation_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.e is not None:
+      raise result.e
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerComputation failed: unknown result");
+
+  def scaleComputation(self, computationName, instances):
+    """
+    Parameters:
+     - computationName
+     - instances
+    """
+    self.send_scaleComputation(computationName, instances)
+    self.recv_scaleComputation()
+
+  def send_scaleComputation(self, computationName, instances):
+    self._oprot.writeMessageBegin('scaleComputation', TMessageType.CALL, self._seqid)
+    args = scaleComputation_args()
+    args.computationName = computationName
+    args.instances = instances
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_scaleComputation(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = scaleComputation_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.e is not None:
@@ -188,6 +231,7 @@ class Processor(Iface, TProcessor):
     self._processMap["deployComputation"] = Processor.process_deployComputation
     self._processMap["getComputationSlug"] = Processor.process_getComputationSlug
     self._processMap["registerComputation"] = Processor.process_registerComputation
+    self._processMap["scaleComputation"] = Processor.process_scaleComputation
     self._processMap["killTask"] = Processor.process_killTask
 
   def process(self, iprot, oprot):
@@ -239,10 +283,24 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = registerComputation_result()
     try:
-      self._handler.registerComputation(args.computation)
+      result.success = self._handler.registerComputation(args.computation)
     except BoltError, e:
       result.e = e
     oprot.writeMessageBegin("registerComputation", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_scaleComputation(self, seqid, iprot, oprot):
+    args = scaleComputation_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = scaleComputation_result()
+    try:
+      self._handler.scaleComputation(args.computationName, args.instances)
+    except BoltError, e:
+      result.e = e
+    oprot.writeMessageBegin("scaleComputation", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -608,15 +666,17 @@ class registerComputation_args:
 class registerComputation_result:
   """
   Attributes:
+   - success
    - e
   """
 
   thrift_spec = (
-    None, # 0
+    (0, TType.STRUCT, 'success', (TopologyMetadata, TopologyMetadata.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, e=None,):
+  def __init__(self, success=None, e=None,):
+    self.success = success
     self.e = e
 
   def read(self, iprot):
@@ -628,7 +688,13 @@ class registerComputation_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = TopologyMetadata()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
         if ftype == TType.STRUCT:
           self.e = BoltError()
           self.e.read(iprot)
@@ -644,6 +710,10 @@ class registerComputation_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('registerComputation_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
     if self.e is not None:
       oprot.writeFieldBegin('e', TType.STRUCT, 1)
       self.e.write(oprot)
@@ -657,6 +727,7 @@ class registerComputation_result:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.success)
     value = (value * 31) ^ hash(self.e)
     return value
 
