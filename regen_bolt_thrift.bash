@@ -12,7 +12,7 @@ fi
 if [[ $(which thrift) != '' ]]; then
     rm -rf ${ROOT}/concord_cli/generated
     mkdir -p ${ROOT}/concord_cli/
-    thrift --gen py -o ${ROOT}/concord_cli/ $BOLT_THRIFT
+    thrift --gen py:json,utf8strings -o ${ROOT}/concord_cli/ $BOLT_THRIFT
     mv ${ROOT}/concord_cli/gen-py ${ROOT}/concord_cli/generated
     echo "DONE!"
 else
