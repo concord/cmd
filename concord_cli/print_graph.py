@@ -35,22 +35,35 @@ def generate_options():
                       action="store", dest="filename")
     return parser
 
-def print_physical(node):
-    return json.dumps(node, default=lambda o: o.__dict__, indent=4)
+
+def print_endpoint(e):
+    print "Node: ", e
+    return "{0}:{1}".format(e.ip, e.port)
+
+def print_physical(node, name):
+    return "Name:\t\t{0}\lMem:\t\t{1}MB\lCPUs:\t\t{2}\lDisk:\t\t{3}MB\l" \
+        "Principal:\t{4}\lProxy:\t\t{5}\lSlave:\t\t{6}\lTask:\t\t{7}\l" \
+        "Exec:\t\t{8} {9}\lUser ENVs:\t\t{10}\lDocker:\t\t{11}\l" \
+        "Reconciling:\t{12}\l".format(
+            name, node.mem, str(node.cpus), str(node.disk),
+            print_endpoint(node.taskHelper.client),
+            print_endpoint(node.taskHelper.proxy),
+            node.slaveId, node.taskId,
+            node.taskHelper.execName,
+            ", ".join(node.taskHelper.clientArguments),
+            ", ".join(node.taskHelper.environmentExtra),
+            node.taskHelper.dockerContainer, node.needsReconciliation)
 
 def print_single_stream(s):
     return json.dumps(s, default=lambda o: o.__dict__, indent=4)
-
-def print_streams(comp):
-    return json.dumps(comp, default=lambda o: o.__dict__, indent=4)
 
 def print_edge(comp1, comp2, dot):
     for streamMetadata in comp1.istreams:
         if streamMetadata.name in comp2.ostreams:
             for node1 in comp1.nodes:
                 for node2 in comp2.nodes:
-                    dot.node(node1.taskId, print_streams(node1))
-                    dot.node(node2.taskId, print_physical(node2))
+                    dot.node(node1.taskId, print_physical(node1, comp1.name))
+                    dot.node(node2.taskId, print_physical(node2, comp2.name))
                     dot.edge(node2.taskId, node1.taskId,
                              label=print_single_stream(streamMetadata))
 
@@ -63,7 +76,12 @@ def print_dot(meta, filename):
                   node_attr={"shape":"rectangle",
                              "align":"left",
                              "fontname":"Arial",
-                             "fontsize":"16"})
+                             "fontsize":"12"})
+
+    for key, comp1 in meta.computations.iteritems():
+        for node1 in comp1.nodes:
+            dot.node(node1.taskId, print_physical(node1, comp1.name))
+
     for key, comp1 in meta.computations.iteritems():
         for key2, comp2 in meta.computations.iteritems():
             if key == key2: continue

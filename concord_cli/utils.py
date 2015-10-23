@@ -5,7 +5,7 @@ from thrift import Thrift
 from kazoo.client import KazooClient
 from concord_cli.generated.concord.internal.thrift.ttypes import *
 from concord_cli.generated.concord.internal.thrift import (
-    BoltTraceAggregatorService,
+
     BoltSchedulerService
 )
 from thrift.protocol import (
@@ -94,12 +94,6 @@ def tproto(ip, port):
 def get_sched_service_client(ip, port):
     (protocol, transport) = tproto(ip, port)
     client = BoltSchedulerService.Client(protocol)
-    transport.open()
-    return client
-
-def get_trace_service_client(ip, port):
-    (protocol, transport) = tproto(ip, port)
-    client = BoltTraceAggregatorService.Client(protocol)
     transport.open()
     return client
 
