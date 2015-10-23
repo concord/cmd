@@ -37,7 +37,6 @@ def generate_options():
 
 
 def print_endpoint(e):
-    print "Node: ", e
     return "{0}:{1}".format(e.ip, e.port)
 
 def print_physical(node, name):
