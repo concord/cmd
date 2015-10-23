@@ -204,7 +204,7 @@ class Endpoint:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'ip', None, None, ), # 1
-    (2, TType.I32, 'port', None, None, ), # 2
+    (2, TType.I16, 'port', None, None, ), # 2
   )
 
   def __init__(self, ip=None, port=None,):
@@ -226,8 +226,8 @@ class Endpoint:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.I32:
-          self.port = iprot.readI32();
+        if ftype == TType.I16:
+          self.port = iprot.readI16();
         else:
           iprot.skip(ftype)
       else:
@@ -245,8 +245,8 @@ class Endpoint:
       oprot.writeString(self.ip.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.port is not None:
-      oprot.writeFieldBegin('port', TType.I32, 2)
-      oprot.writeI32(self.port)
+      oprot.writeFieldBegin('port', TType.I16, 2)
+      oprot.writeI16(self.port)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
