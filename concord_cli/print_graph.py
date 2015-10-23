@@ -43,7 +43,7 @@ def print_endpoint(e):
 def print_physical(node, name):
     return "Name:\t\t{0}\lMem:\t\t{1}MB\lCPUs:\t\t{2}\lDisk:\t\t{3}MB\l" \
         "Principal:\t{4}\lProxy:\t\t{5}\lSlave:\t\t{6}\lTask:\t\t{7}\l" \
-        "Exec:\t\t{8} {9}\lUser ENVs:\t\t{10}\lDocker:\t\t{11}\l" \
+        "Exec:\t\t{8} {9}\lUser ENVs:\t{10}\lDocker:\t\t{11}\l" \
         "Reconciling:\t{12}\l".format(
             name, node.mem, str(node.cpus), str(node.disk),
             print_endpoint(node.taskHelper.client),
