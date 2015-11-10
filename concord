@@ -4,19 +4,19 @@
 case ${1} in
     config)
         shift
-        python -m concord_cli/config "$@"
+        python2.7 -m concord_cli/config "$@"
         ;;
     graph)
         shift
-        python -m concord_cli/print_graph "$@"
+        python2.7 -m concord_cli/print_graph "$@"
         ;;
     deploy)
         shift
-        python -m concord_cli/deploy "$@"
+        python2.7 -m concord_cli/deploy "$@"
         ;;
     kill)
         shift
-        python -m concord_cli/kill_task "$@"
+        python2.7 -m concord_cli/kill_task "$@"
         ;;
     *)
         echo "Usage: "
