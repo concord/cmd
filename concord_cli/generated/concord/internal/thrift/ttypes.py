@@ -494,7 +494,6 @@ class ExecutorTaskInfoHelper:
    - scheduler
    - proxy
    - client
-   - traceAggregator
    - execName
    - folder
    - computationAliasName
@@ -511,23 +510,21 @@ class ExecutorTaskInfoHelper:
     (4, TType.STRUCT, 'scheduler', (Endpoint, Endpoint.thrift_spec), None, ), # 4
     (5, TType.STRUCT, 'proxy', (Endpoint, Endpoint.thrift_spec), None, ), # 5
     (6, TType.STRUCT, 'client', (Endpoint, Endpoint.thrift_spec), None, ), # 6
-    (7, TType.STRUCT, 'traceAggregator', (Endpoint, Endpoint.thrift_spec), None, ), # 7
-    (8, TType.STRING, 'execName', None, None, ), # 8
-    (9, TType.STRING, 'folder', None, None, ), # 9
-    (10, TType.STRING, 'computationAliasName', None, None, ), # 10
-    (11, TType.LIST, 'clientArguments', (TType.STRING,None), None, ), # 11
-    (12, TType.LIST, 'environmentExtra', (TType.STRING,None), None, ), # 12
-    (13, TType.STRING, 'dockerContainer', None, None, ), # 13
+    (7, TType.STRING, 'execName', None, None, ), # 7
+    (8, TType.STRING, 'folder', None, None, ), # 8
+    (9, TType.STRING, 'computationAliasName', None, None, ), # 9
+    (10, TType.LIST, 'clientArguments', (TType.STRING,None), None, ), # 10
+    (11, TType.LIST, 'environmentExtra', (TType.STRING,None), None, ), # 11
+    (12, TType.STRING, 'dockerContainer', None, None, ), # 12
   )
 
-  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, traceAggregator=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None,):
+  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None,):
     self.frameworkLoggingLevel = frameworkLoggingLevel
     self.user = user
     self.frameworkVModule = frameworkVModule
     self.scheduler = scheduler
     self.proxy = proxy
     self.client = client
-    self.traceAggregator = traceAggregator
     self.execName = execName
     self.folder = folder
     self.computationAliasName = computationAliasName
@@ -578,27 +575,21 @@ class ExecutorTaskInfoHelper:
         else:
           iprot.skip(ftype)
       elif fid == 7:
-        if ftype == TType.STRUCT:
-          self.traceAggregator = Endpoint()
-          self.traceAggregator.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 8:
         if ftype == TType.STRING:
           self.execName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
-      elif fid == 9:
+      elif fid == 8:
         if ftype == TType.STRING:
           self.folder = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
-      elif fid == 10:
+      elif fid == 9:
         if ftype == TType.STRING:
           self.computationAliasName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
-      elif fid == 11:
+      elif fid == 10:
         if ftype == TType.LIST:
           self.clientArguments = []
           (_etype17, _size14) = iprot.readListBegin()
@@ -608,7 +599,7 @@ class ExecutorTaskInfoHelper:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 11:
         if ftype == TType.LIST:
           self.environmentExtra = []
           (_etype23, _size20) = iprot.readListBegin()
@@ -618,7 +609,7 @@ class ExecutorTaskInfoHelper:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 12:
         if ftype == TType.STRING:
           self.dockerContainer = iprot.readString().decode('utf-8')
         else:
@@ -657,38 +648,34 @@ class ExecutorTaskInfoHelper:
       oprot.writeFieldBegin('client', TType.STRUCT, 6)
       self.client.write(oprot)
       oprot.writeFieldEnd()
-    if self.traceAggregator is not None:
-      oprot.writeFieldBegin('traceAggregator', TType.STRUCT, 7)
-      self.traceAggregator.write(oprot)
-      oprot.writeFieldEnd()
     if self.execName is not None:
-      oprot.writeFieldBegin('execName', TType.STRING, 8)
+      oprot.writeFieldBegin('execName', TType.STRING, 7)
       oprot.writeString(self.execName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.folder is not None:
-      oprot.writeFieldBegin('folder', TType.STRING, 9)
+      oprot.writeFieldBegin('folder', TType.STRING, 8)
       oprot.writeString(self.folder.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.computationAliasName is not None:
-      oprot.writeFieldBegin('computationAliasName', TType.STRING, 10)
+      oprot.writeFieldBegin('computationAliasName', TType.STRING, 9)
       oprot.writeString(self.computationAliasName.encode('utf-8'))
       oprot.writeFieldEnd()
     if self.clientArguments is not None:
-      oprot.writeFieldBegin('clientArguments', TType.LIST, 11)
+      oprot.writeFieldBegin('clientArguments', TType.LIST, 10)
       oprot.writeListBegin(TType.STRING, len(self.clientArguments))
       for iter26 in self.clientArguments:
         oprot.writeString(iter26.encode('utf-8'))
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.environmentExtra is not None:
-      oprot.writeFieldBegin('environmentExtra', TType.LIST, 12)
+      oprot.writeFieldBegin('environmentExtra', TType.LIST, 11)
       oprot.writeListBegin(TType.STRING, len(self.environmentExtra))
       for iter27 in self.environmentExtra:
         oprot.writeString(iter27.encode('utf-8'))
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.dockerContainer is not None:
-      oprot.writeFieldBegin('dockerContainer', TType.STRING, 13)
+      oprot.writeFieldBegin('dockerContainer', TType.STRING, 12)
       oprot.writeString(self.dockerContainer.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -706,7 +693,6 @@ class ExecutorTaskInfoHelper:
     value = (value * 31) ^ hash(self.scheduler)
     value = (value * 31) ^ hash(self.proxy)
     value = (value * 31) ^ hash(self.client)
-    value = (value * 31) ^ hash(self.traceAggregator)
     value = (value * 31) ^ hash(self.execName)
     value = (value * 31) ^ hash(self.folder)
     value = (value * 31) ^ hash(self.computationAliasName)
@@ -1085,6 +1071,7 @@ class TopologyMetadata:
    - version
    - computations
    - frameworkID
+   - kafkaBrokerList
   """
 
   thrift_spec = (
@@ -1092,12 +1079,14 @@ class TopologyMetadata:
     (1, TType.I32, 'version', None, 0, ), # 1
     (2, TType.MAP, 'computations', (TType.STRING,None,TType.STRUCT,(PhysicalComputationLayout, PhysicalComputationLayout.thrift_spec)), None, ), # 2
     (3, TType.STRING, 'frameworkID', None, None, ), # 3
+    (4, TType.STRING, 'kafkaBrokerList', None, None, ), # 4
   )
 
-  def __init__(self, version=thrift_spec[1][4], computations=None, frameworkID=None,):
+  def __init__(self, version=thrift_spec[1][4], computations=None, frameworkID=None, kafkaBrokerList=None,):
     self.version = version
     self.computations = computations
     self.frameworkID = frameworkID
+    self.kafkaBrokerList = kafkaBrokerList
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1130,6 +1119,11 @@ class TopologyMetadata:
           self.frameworkID = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.kafkaBrokerList = iprot.readString().decode('utf-8')
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1156,6 +1150,10 @@ class TopologyMetadata:
       oprot.writeFieldBegin('frameworkID', TType.STRING, 3)
       oprot.writeString(self.frameworkID.encode('utf-8'))
       oprot.writeFieldEnd()
+    if self.kafkaBrokerList is not None:
+      oprot.writeFieldBegin('kafkaBrokerList', TType.STRING, 4)
+      oprot.writeString(self.kafkaBrokerList.encode('utf-8'))
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1168,6 +1166,7 @@ class TopologyMetadata:
     value = (value * 31) ^ hash(self.version)
     value = (value * 31) ^ hash(self.computations)
     value = (value * 31) ^ hash(self.frameworkID)
+    value = (value * 31) ^ hash(self.kafkaBrokerList)
     return value
 
   def __repr__(self):
