@@ -33,7 +33,8 @@ Example of configuration file
     "computation_name": "word-count-source",
     "update_binary": true,
     "execute_as_user": "agallego",
-    "docker_container": "concord/client_devbox"
+    "docker_container": "concord/client_devbox",
+    "retries": 2
 }
 """
 
@@ -64,6 +65,7 @@ DEFAULTS = dict(
     framework_logging_level = 0,
     exclude_compress_files = [],
     docker_container = "",
+    retries = 0,
 )
 
 def validate_json_raw_config(dictionary, parser):
@@ -73,9 +75,9 @@ def validate_json_raw_config(dictionary, parser):
                   "framework_logging_level", "environment_variables",
                   "zookeeper_hosts", "exclude_compress_files",
                   "update_binary", "execute_as_user",
-                  "docker_container"]
-    reqs = ['compress_files', 'executable_name', 'computation_name',
-            'zookeeper_hosts', 'zookeeper_path']
+                  "docker_container", "retries"]
+    reqs = ["compress_files", "executable_name", "computation_name",
+            "zookeeper_hosts", "zookeeper_path"]
 
     all_keys = list(valid_keys)
     all_keys.extend(reqs)
@@ -194,6 +196,7 @@ def build_thrift_request(request):
         os.path.relpath(request["executable_name"]))
     req.taskHelper.user = request["execute_as_user"]
     req.taskHelper.dockerContainer = request["docker_container"]
+    req.taskHelper.retries = request["retries"]
     logger.debug("Thrift Request: %s" % req)
     req.slug = slug
     return req

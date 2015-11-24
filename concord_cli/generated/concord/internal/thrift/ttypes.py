@@ -500,6 +500,7 @@ class ExecutorTaskInfoHelper:
    - clientArguments
    - environmentExtra
    - dockerContainer
+   - retries
   """
 
   thrift_spec = (
@@ -516,9 +517,10 @@ class ExecutorTaskInfoHelper:
     (10, TType.LIST, 'clientArguments', (TType.STRING,None), None, ), # 10
     (11, TType.LIST, 'environmentExtra', (TType.STRING,None), None, ), # 11
     (12, TType.STRING, 'dockerContainer', None, None, ), # 12
+    (13, TType.I32, 'retries', None, 0, ), # 13
   )
 
-  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None,):
+  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None, retries=thrift_spec[13][4],):
     self.frameworkLoggingLevel = frameworkLoggingLevel
     self.user = user
     self.frameworkVModule = frameworkVModule
@@ -531,6 +533,7 @@ class ExecutorTaskInfoHelper:
     self.clientArguments = clientArguments
     self.environmentExtra = environmentExtra
     self.dockerContainer = dockerContainer
+    self.retries = retries
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -614,6 +617,11 @@ class ExecutorTaskInfoHelper:
           self.dockerContainer = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.I32:
+          self.retries = iprot.readI32();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -678,6 +686,10 @@ class ExecutorTaskInfoHelper:
       oprot.writeFieldBegin('dockerContainer', TType.STRING, 12)
       oprot.writeString(self.dockerContainer.encode('utf-8'))
       oprot.writeFieldEnd()
+    if self.retries is not None:
+      oprot.writeFieldBegin('retries', TType.I32, 13)
+      oprot.writeI32(self.retries)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -699,6 +711,7 @@ class ExecutorTaskInfoHelper:
     value = (value * 31) ^ hash(self.clientArguments)
     value = (value * 31) ^ hash(self.environmentExtra)
     value = (value * 31) ^ hash(self.dockerContainer)
+    value = (value * 31) ^ hash(self.retries)
     return value
 
   def __repr__(self):
@@ -722,6 +735,7 @@ class PhysicalComputationMetadata:
    - disk
    - taskHelper
    - needsReconciliation
+   - killed
   """
 
   thrift_spec = (
@@ -733,9 +747,10 @@ class PhysicalComputationMetadata:
     (5, TType.I32, 'disk', None, None, ), # 5
     (6, TType.STRUCT, 'taskHelper', (ExecutorTaskInfoHelper, ExecutorTaskInfoHelper.thrift_spec), None, ), # 6
     (7, TType.BOOL, 'needsReconciliation', None, None, ), # 7
+    (8, TType.BOOL, 'killed', None, None, ), # 8
   )
 
-  def __init__(self, taskId=None, slaveId=None, cpus=None, mem=None, disk=None, taskHelper=None, needsReconciliation=None,):
+  def __init__(self, taskId=None, slaveId=None, cpus=None, mem=None, disk=None, taskHelper=None, needsReconciliation=None, killed=None,):
     self.taskId = taskId
     self.slaveId = slaveId
     self.cpus = cpus
@@ -743,6 +758,7 @@ class PhysicalComputationMetadata:
     self.disk = disk
     self.taskHelper = taskHelper
     self.needsReconciliation = needsReconciliation
+    self.killed = killed
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -789,6 +805,11 @@ class PhysicalComputationMetadata:
           self.needsReconciliation = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.BOOL:
+          self.killed = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -827,6 +848,10 @@ class PhysicalComputationMetadata:
       oprot.writeFieldBegin('needsReconciliation', TType.BOOL, 7)
       oprot.writeBool(self.needsReconciliation)
       oprot.writeFieldEnd()
+    if self.killed is not None:
+      oprot.writeFieldBegin('killed', TType.BOOL, 8)
+      oprot.writeBool(self.killed)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -843,6 +868,7 @@ class PhysicalComputationMetadata:
     value = (value * 31) ^ hash(self.disk)
     value = (value * 31) ^ hash(self.taskHelper)
     value = (value * 31) ^ hash(self.needsReconciliation)
+    value = (value * 31) ^ hash(self.killed)
     return value
 
   def __repr__(self):
