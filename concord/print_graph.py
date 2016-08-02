@@ -2,7 +2,7 @@
 from optparse import OptionParser
 from graphviz import Digraph
 from kazoo.client import KazooClient
-from concord_cli.generated.concord.internal.thrift.ttypes import *
+from concord.internal.thrift.ttypes import *
 from operator import attrgetter
 
 import json
@@ -11,21 +11,18 @@ import logging
 from thrift.protocol import TJSONProtocol, TBinaryProtocol
 from thrift.transport import TTransport
 
-from concord_cli.utils import *
+from concord.utils import *
+from concord.thrift_utils import *
 
-logging.basicConfig()
-logger = logging.getLogger('cmd.print_graph')
-logger.setLevel(logging.INFO)
+logger = build_logger('cmd.print_graph')
 
 def generate_options():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
     parser.add_option("-z", "--zookeeper", dest="zookeeper",
-                      default="localhost:2181", action="store",
-                      help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
+                      action="store", help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
     parser.add_option("-p", "--zookeeper_path", dest="zk_path",
-                      help="zookeeper path, i.e.: /concord",
-                      action="store", default="/concord")
+                      help="zookeeper path, i.e.: /concord", action="store")
     parser.add_option("-v", "--verbose",
                       action="store_true", dest="verbose")
     parser.add_option("-q", "--quiet",
@@ -41,12 +38,13 @@ def print_endpoint(e):
 
 def print_physical(node, name):
     return "Name:\t\t{0}\lMem:\t\t{1}MB\lCPUs:\t\t{2}\lDisk:\t\t{3}MB\l" \
-        "Principal:\t{4}\lProxy:\t\t{5}\lSlave:\t\t{6}\lTask:\t\t{7}\l" \
-        "Exec:\t\t{8} {9}\lUser ENVs:\t{10}\lDocker:\t\t{11}\l" \
-        "Reconciling:\t{12}\l".format(
+        "Principal:\t{4}\lProxy:\t\t{5}\lRouter:\t\t{6}\lSlave:\t\t{7}\lTask:\t\t{8}\l" \
+        "Exec:\t\t{9} {10}\lUser ENVs:\t{11}\lDocker:\t\t{12}\l" \
+        "Reconciling:\t{13}\l".format(
             name, node.mem, str(node.cpus), str(node.disk),
             print_endpoint(node.taskHelper.client),
             print_endpoint(node.taskHelper.proxy),
+            print_endpoint(node.taskHelper.router),
             node.slaveId, node.taskId,
             node.taskHelper.execName,
             ", ".join(node.taskHelper.clientArguments),

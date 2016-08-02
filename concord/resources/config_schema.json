@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "zookeeper_hosts": {
+      "type": "string",
+      "title": "Zookeeper hosts URL",
+      "description": "Zookeeper url for Concord.",
+      "default": "localhost:2181"
+    },
+    "zookeeper_path": {
+      "type": "string",
+      "pattern": "^\/.*$",
+      "title": "Zookeeper path",
+      "description": "Concord storage path inside zookeeper.",
+      "default": "/concord"
+    }
+  },
+  "additionalProperties": false
+}

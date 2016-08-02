@@ -1,7 +1,7 @@
 import os
 import unittest
-from concord_cli.generated.concord.internal.thrift.ttypes import *
-from concord_cli.print_graph import *
+from concord.internal.thrift.ttypes import *
+from concord.print_graph import *
 from testing_utilities import *
 
 class TestPrintGraph(unittest.TestCase):
@@ -18,6 +18,8 @@ class TestPrintGraph(unittest.TestCase):
         self.stubbed_metadata = TopologyMetadata()
         bytes_to_thrift(self.test_topology_metadata, self.stubbed_metadata)
 
+    # TODO: This test is failing because the stubbed metadata is incorrect and
+    # will not work with the new version of print_dot. Change test_topology_metadata asap.
     def test_print_dot(self):
         # Give print dot a filepath to store its result into
         temp_file_name = test_filepath("temporary")

@@ -3,7 +3,7 @@ import json
 import tempfile
 import shutil
 import re
-from concord_cli.deploy import *
+from concord.deploy import *
 from testing_utilities import *
 from subprocess import call
 
@@ -24,8 +24,8 @@ class TestDeployScript(unittest.TestCase):
                           "zookeeper_hosts", "exclude_compress_files",
                           "update_binary", "execute_as_user",
                           "docker_container"]
-        self.filename = 'test_deploy_file'
-        self.improperFormatFilename = 'test_deploy_file_incorrect'
+        self.filename = 'test_deploy_file.json'
+        self.improperFormatFilename = 'test_deploy_file_incorrect.json'
         self.stub = StubParser()
 
     def test_validate_json_raw_config(self):
@@ -84,7 +84,7 @@ class TestDeployScript(unittest.TestCase):
         self.assertTrue(conf["executable_name"] in conf["compress_files"])
 
         # Assert that the options dictionary contains expected key/value pairs
-        self.assertDictEqual(cData, conf)
+        map(lambda x: self.assertIn(x, conf.keys()), cData.keys())
 
     def test_tar_file_list(self):
         total_files = [ 'test_directory/a1', 'test_directory/a2',
@@ -113,6 +113,12 @@ class TestDeployScript(unittest.TestCase):
                       'test_directory/subdir/b1']
         self.tar_tester_driver(total_files, white_list, black_list, succ_list)
 
+        # Assert that relative paths work too
+        white_list = [ './test_directory/subdir/a1' ]
+        black_list = [ '.*x' ]
+        succ_list = white_list
+        self.tar_tester_driver(total_files, white_list, black_list, succ_list)
+
 
     def tar_tester_driver(self, total_files, white_list, black_list, successful):
         # Create actual temporary directory
@@ -126,7 +132,11 @@ class TestDeployScript(unittest.TestCase):
         total_files = map(prepend_dirname, total_files)
         successful = map(prepend_dirname, successful)
 
+        # Save current dir
+        current_dir = os.getcwd()
         try:
+            os.chdir(temp_dirname)
+
             # Create new files from fake data
             for f in total_files:
                 create_temporary_file(f)
@@ -137,5 +147,6 @@ class TestDeployScript(unittest.TestCase):
             successful.sort()
             self.assertListEqual(all_include, successful)
         finally:
-            # Remove temporary directory and all of its related content
+            # Remove temporary directory and change back to original dir
             shutil.rmtree(temp_dirname)
+            os.chdir(current_dir)

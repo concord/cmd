@@ -18,25 +18,32 @@ except:
 
 
 class Iface:
-  def init(self):
-    pass
-
-  def boltProcessRecords(self, records):
+  def deployComputation(self, request):
     """
     Parameters:
-     - records
+     - request
     """
     pass
 
-  def boltProcessTimer(self, key, time):
+  def getComputationSlug(self, computationName):
     """
     Parameters:
-     - key
-     - time
+     - computationName
     """
     pass
 
-  def boltMetadata(self):
+  def registerComputation(self, computation):
+    """
+    Parameters:
+     - computation
+    """
+    pass
+
+  def killTask(self, taskId):
+    """
+    Parameters:
+     - taskId
+    """
     pass
 
 
@@ -47,51 +54,23 @@ class Client(Iface):
       self._oprot = oprot
     self._seqid = 0
 
-  def init(self):
-    self.send_init()
-    return self.recv_init()
-
-  def send_init(self):
-    self._oprot.writeMessageBegin('init', TMessageType.CALL, self._seqid)
-    args = init_args()
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_init(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = init_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.e is not None:
-      raise result.e
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "init failed: unknown result");
-
-  def boltProcessRecords(self, records):
+  def deployComputation(self, request):
     """
     Parameters:
-     - records
+     - request
     """
-    self.send_boltProcessRecords(records)
-    return self.recv_boltProcessRecords()
+    self.send_deployComputation(request)
+    self.recv_deployComputation()
 
-  def send_boltProcessRecords(self, records):
-    self._oprot.writeMessageBegin('boltProcessRecords', TMessageType.CALL, self._seqid)
-    args = boltProcessRecords_args()
-    args.records = records
+  def send_deployComputation(self, request):
+    self._oprot.writeMessageBegin('deployComputation', TMessageType.CALL, self._seqid)
+    args = deployComputation_args()
+    args.request = request
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_boltProcessRecords(self):
+  def recv_deployComputation(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -99,34 +78,30 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = boltProcessRecords_result()
+    result = deployComputation_result()
     result.read(iprot)
     iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
     if result.e is not None:
       raise result.e
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "boltProcessRecords failed: unknown result");
+    return
 
-  def boltProcessTimer(self, key, time):
+  def getComputationSlug(self, computationName):
     """
     Parameters:
-     - key
-     - time
+     - computationName
     """
-    self.send_boltProcessTimer(key, time)
-    return self.recv_boltProcessTimer()
+    self.send_getComputationSlug(computationName)
+    return self.recv_getComputationSlug()
 
-  def send_boltProcessTimer(self, key, time):
-    self._oprot.writeMessageBegin('boltProcessTimer', TMessageType.CALL, self._seqid)
-    args = boltProcessTimer_args()
-    args.key = key
-    args.time = time
+  def send_getComputationSlug(self, computationName):
+    self._oprot.writeMessageBegin('getComputationSlug', TMessageType.CALL, self._seqid)
+    args = getComputationSlug_args()
+    args.computationName = computationName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_boltProcessTimer(self):
+  def recv_getComputationSlug(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -134,27 +109,32 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = boltProcessTimer_result()
+    result = getComputationSlug_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.e is not None:
       raise result.e
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "boltProcessTimer failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getComputationSlug failed: unknown result");
 
-  def boltMetadata(self):
-    self.send_boltMetadata()
-    return self.recv_boltMetadata()
+  def registerComputation(self, computation):
+    """
+    Parameters:
+     - computation
+    """
+    self.send_registerComputation(computation)
+    return self.recv_registerComputation()
 
-  def send_boltMetadata(self):
-    self._oprot.writeMessageBegin('boltMetadata', TMessageType.CALL, self._seqid)
-    args = boltMetadata_args()
+  def send_registerComputation(self, computation):
+    self._oprot.writeMessageBegin('registerComputation', TMessageType.CALL, self._seqid)
+    args = registerComputation_args()
+    args.computation = computation
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_boltMetadata(self):
+  def recv_registerComputation(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -162,24 +142,55 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = boltMetadata_result()
+    result = registerComputation_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     if result.e is not None:
       raise result.e
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "boltMetadata failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "registerComputation failed: unknown result");
+
+  def killTask(self, taskId):
+    """
+    Parameters:
+     - taskId
+    """
+    self.send_killTask(taskId)
+    self.recv_killTask()
+
+  def send_killTask(self, taskId):
+    self._oprot.writeMessageBegin('killTask', TMessageType.CALL, self._seqid)
+    args = killTask_args()
+    args.taskId = taskId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_killTask(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = killTask_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.e is not None:
+      raise result.e
+    return
 
 
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
     self._handler = handler
     self._processMap = {}
-    self._processMap["init"] = Processor.process_init
-    self._processMap["boltProcessRecords"] = Processor.process_boltProcessRecords
-    self._processMap["boltProcessTimer"] = Processor.process_boltProcessTimer
-    self._processMap["boltMetadata"] = Processor.process_boltMetadata
+    self._processMap["deployComputation"] = Processor.process_deployComputation
+    self._processMap["getComputationSlug"] = Processor.process_getComputationSlug
+    self._processMap["registerComputation"] = Processor.process_registerComputation
+    self._processMap["killTask"] = Processor.process_killTask
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -196,58 +207,58 @@ class Processor(Iface, TProcessor):
       self._processMap[name](self, seqid, iprot, oprot)
     return True
 
-  def process_init(self, seqid, iprot, oprot):
-    args = init_args()
+  def process_deployComputation(self, seqid, iprot, oprot):
+    args = deployComputation_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = init_result()
+    result = deployComputation_result()
     try:
-      result.success = self._handler.init()
+      self._handler.deployComputation(args.request)
     except BoltError, e:
       result.e = e
-    oprot.writeMessageBegin("init", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("deployComputation", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_boltProcessRecords(self, seqid, iprot, oprot):
-    args = boltProcessRecords_args()
+  def process_getComputationSlug(self, seqid, iprot, oprot):
+    args = getComputationSlug_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = boltProcessRecords_result()
+    result = getComputationSlug_result()
     try:
-      result.success = self._handler.boltProcessRecords(args.records)
+      result.success = self._handler.getComputationSlug(args.computationName)
     except BoltError, e:
       result.e = e
-    oprot.writeMessageBegin("boltProcessRecords", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("getComputationSlug", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_boltProcessTimer(self, seqid, iprot, oprot):
-    args = boltProcessTimer_args()
+  def process_registerComputation(self, seqid, iprot, oprot):
+    args = registerComputation_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = boltProcessTimer_result()
+    result = registerComputation_result()
     try:
-      result.success = self._handler.boltProcessTimer(args.key, args.time)
+      result.success = self._handler.registerComputation(args.computation)
     except BoltError, e:
       result.e = e
-    oprot.writeMessageBegin("boltProcessTimer", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("registerComputation", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_boltMetadata(self, seqid, iprot, oprot):
-    args = boltMetadata_args()
+  def process_killTask(self, seqid, iprot, oprot):
+    args = killTask_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = boltMetadata_result()
+    result = killTask_result()
     try:
-      result.success = self._handler.boltMetadata()
+      self._handler.killTask(args.taskId)
     except BoltError, e:
       result.e = e
-    oprot.writeMessageBegin("boltMetadata", TMessageType.REPLY, seqid)
+    oprot.writeMessageBegin("killTask", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -255,144 +266,19 @@ class Processor(Iface, TProcessor):
 
 # HELPER FUNCTIONS AND STRUCTURES
 
-class init_args:
-
-  thrift_spec = (
-  )
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('init_args')
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class init_result:
+class deployComputation_args:
   """
   Attributes:
-   - success
-   - e
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (ComputationTx, ComputationTx.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
-  )
-
-  def __init__(self, success=None, e=None,):
-    self.success = success
-    self.e = e
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = ComputationTx()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.e = BoltError()
-          self.e.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('init_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.e is not None:
-      oprot.writeFieldBegin('e', TType.STRUCT, 1)
-      self.e.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.e)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class boltProcessRecords_args:
-  """
-  Attributes:
-   - records
+   - request
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.LIST, 'records', (TType.STRUCT,(Record, Record.thrift_spec)), None, ), # 1
+    (1, TType.STRUCT, 'request', (BoltComputationRequest, BoltComputationRequest.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, records=None,):
-    self.records = records
+  def __init__(self, request=None,):
+    self.request = request
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -404,14 +290,9 @@ class boltProcessRecords_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.LIST:
-          self.records = []
-          (_etype84, _size81) = iprot.readListBegin()
-          for _i85 in xrange(_size81):
-            _elem86 = Record()
-            _elem86.read(iprot)
-            self.records.append(_elem86)
-          iprot.readListEnd()
+        if ftype == TType.STRUCT:
+          self.request = BoltComputationRequest()
+          self.request.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -423,13 +304,10 @@ class boltProcessRecords_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltProcessRecords_args')
-    if self.records is not None:
-      oprot.writeFieldBegin('records', TType.LIST, 1)
-      oprot.writeListBegin(TType.STRUCT, len(self.records))
-      for iter87 in self.records:
-        iter87.write(oprot)
-      oprot.writeListEnd()
+    oprot.writeStructBegin('deployComputation_args')
+    if self.request is not None:
+      oprot.writeFieldBegin('request', TType.STRUCT, 1)
+      self.request.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -440,7 +318,7 @@ class boltProcessRecords_args:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.records)
+    value = (value * 31) ^ hash(self.request)
     return value
 
   def __repr__(self):
@@ -454,20 +332,18 @@ class boltProcessRecords_args:
   def __ne__(self, other):
     return not (self == other)
 
-class boltProcessRecords_result:
+class deployComputation_result:
   """
   Attributes:
-   - success
    - e
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(ComputationTx, ComputationTx.thrift_spec)), None, ), # 0
+    None, # 0
     (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, success=None, e=None,):
-    self.success = success
+  def __init__(self, e=None,):
     self.e = e
 
   def read(self, iprot):
@@ -479,18 +355,7 @@ class boltProcessRecords_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype91, _size88) = iprot.readListBegin()
-          for _i92 in xrange(_size88):
-            _elem93 = ComputationTx()
-            _elem93.read(iprot)
-            self.success.append(_elem93)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
+      if fid == 1:
         if ftype == TType.STRUCT:
           self.e = BoltError()
           self.e.read(iprot)
@@ -505,14 +370,7 @@ class boltProcessRecords_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltProcessRecords_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter94 in self.success:
-        iter94.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
+    oprot.writeStructBegin('deployComputation_result')
     if self.e is not None:
       oprot.writeFieldBegin('e', TType.STRUCT, 1)
       self.e.write(oprot)
@@ -526,7 +384,6 @@ class boltProcessRecords_result:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.success)
     value = (value * 31) ^ hash(self.e)
     return value
 
@@ -541,22 +398,19 @@ class boltProcessRecords_result:
   def __ne__(self, other):
     return not (self == other)
 
-class boltProcessTimer_args:
+class getComputationSlug_args:
   """
   Attributes:
-   - key
-   - time
+   - computationName
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'key', None, None, ), # 1
-    (2, TType.I64, 'time', None, None, ), # 2
+    (1, TType.STRING, 'computationName', None, None, ), # 1
   )
 
-  def __init__(self, key=None, time=None,):
-    self.key = key
-    self.time = time
+  def __init__(self, computationName=None,):
+    self.computationName = computationName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -569,12 +423,7 @@ class boltProcessTimer_args:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.key = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.I64:
-          self.time = iprot.readI64();
+          self.computationName = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
       else:
@@ -586,14 +435,10 @@ class boltProcessTimer_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltProcessTimer_args')
-    if self.key is not None:
-      oprot.writeFieldBegin('key', TType.STRING, 1)
-      oprot.writeString(self.key.encode('utf-8'))
-      oprot.writeFieldEnd()
-    if self.time is not None:
-      oprot.writeFieldBegin('time', TType.I64, 2)
-      oprot.writeI64(self.time)
+    oprot.writeStructBegin('getComputationSlug_args')
+    if self.computationName is not None:
+      oprot.writeFieldBegin('computationName', TType.STRING, 1)
+      oprot.writeString(self.computationName.encode('utf-8'))
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -604,8 +449,7 @@ class boltProcessTimer_args:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.key)
-    value = (value * 31) ^ hash(self.time)
+    value = (value * 31) ^ hash(self.computationName)
     return value
 
   def __repr__(self):
@@ -619,7 +463,7 @@ class boltProcessTimer_args:
   def __ne__(self, other):
     return not (self == other)
 
-class boltProcessTimer_result:
+class getComputationSlug_result:
   """
   Attributes:
    - success
@@ -627,7 +471,151 @@ class boltProcessTimer_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (ComputationTx, ComputationTx.thrift_spec), None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, e=None,):
+    self.success = success
+    self.e = e
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.e = BoltError()
+          self.e.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getComputationSlug_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
+    if self.e is not None:
+      oprot.writeFieldBegin('e', TType.STRUCT, 1)
+      self.e.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.e)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class registerComputation_args:
+  """
+  Attributes:
+   - computation
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'computation', (ComputationMetadata, ComputationMetadata.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, computation=None,):
+    self.computation = computation
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.computation = ComputationMetadata()
+          self.computation.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('registerComputation_args')
+    if self.computation is not None:
+      oprot.writeFieldBegin('computation', TType.STRUCT, 1)
+      self.computation.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.computation)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class registerComputation_result:
+  """
+  Attributes:
+   - success
+   - e
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (TopologyMetadata, TopologyMetadata.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
   )
 
@@ -646,7 +634,7 @@ class boltProcessTimer_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = ComputationTx()
+          self.success = TopologyMetadata()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -665,7 +653,7 @@ class boltProcessTimer_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltProcessTimer_result')
+    oprot.writeStructBegin('registerComputation_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRUCT, 0)
       self.success.write(oprot)
@@ -698,10 +686,19 @@ class boltProcessTimer_result:
   def __ne__(self, other):
     return not (self == other)
 
-class boltMetadata_args:
+class killTask_args:
+  """
+  Attributes:
+   - taskId
+  """
 
   thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'taskId', None, None, ), # 1
   )
+
+  def __init__(self, taskId=None,):
+    self.taskId = taskId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -712,6 +709,11 @@ class boltMetadata_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.taskId = iprot.readString().decode('utf-8')
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -721,7 +723,11 @@ class boltMetadata_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltMetadata_args')
+    oprot.writeStructBegin('killTask_args')
+    if self.taskId is not None:
+      oprot.writeFieldBegin('taskId', TType.STRING, 1)
+      oprot.writeString(self.taskId.encode('utf-8'))
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -731,6 +737,7 @@ class boltMetadata_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.taskId)
     return value
 
   def __repr__(self):
@@ -744,20 +751,18 @@ class boltMetadata_args:
   def __ne__(self, other):
     return not (self == other)
 
-class boltMetadata_result:
+class killTask_result:
   """
   Attributes:
-   - success
    - e
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (ComputationMetadata, ComputationMetadata.thrift_spec), None, ), # 0
+    None, # 0
     (1, TType.STRUCT, 'e', (BoltError, BoltError.thrift_spec), None, ), # 1
   )
 
-  def __init__(self, success=None, e=None,):
-    self.success = success
+  def __init__(self, e=None,):
     self.e = e
 
   def read(self, iprot):
@@ -769,13 +774,7 @@ class boltMetadata_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = ComputationMetadata()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
+      if fid == 1:
         if ftype == TType.STRUCT:
           self.e = BoltError()
           self.e.read(iprot)
@@ -790,11 +789,7 @@ class boltMetadata_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('boltMetadata_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
+    oprot.writeStructBegin('killTask_result')
     if self.e is not None:
       oprot.writeFieldBegin('e', TType.STRUCT, 1)
       self.e.write(oprot)
@@ -808,7 +803,6 @@ class boltMetadata_result:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.success)
     value = (value * 31) ^ hash(self.e)
     return value
 

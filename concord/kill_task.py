@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 import sys
 import thrift
-import json
 import logging
 import argparse
-from concord_cli.utils import *
+from concord.utils import *
+from concord.thrift_utils import *
+from concord.functional_utils import *
 from terminaltables import AsciiTable
 
-logging.basicConfig()
-logger = logging.getLogger('cmd.kill_task')
-logger.setLevel(logging.INFO)
+logger = build_logger('cmd.kill_task')
 
 def generate_options():
     parser = argparse.ArgumentParser()
@@ -17,13 +16,11 @@ def generate_options():
                         ,"--zk_path"
                         ,metavar="zookeeper-path"
                         ,help="Path of concord topology on zk"
-                        ,default="/concord"
                         ,action="store")
     parser.add_argument("-z"
                         ,"--zookeeper"
                         ,metavar="zookeeper-hosts"
                         ,help="i.e: 1.2.3.4:2181,2.3.4.5:2181"
-                        ,default="localhost:2181"
                         ,action="store")
     parser.add_argument("-t"
                         ,"--task_id"
@@ -176,15 +173,13 @@ def main():
     options = parser.parse_args()
     validate_options(options, parser)
 
-    if not options.task_id and not options.all:
-        interactive_mode(options.zookeeper, options.zk_path)
-    elif not options.all:
-        kill(options.zookeeper, options.zk_path, options.task_id)
-    elif not options.task_id:
+    if options.all:
         kill(options.zookeeper, options.zk_path,
-             collect_taskids(options.zookeeper, options.zk_path)
-)
-
+             collect_taskids(options.zookeeper, options.zk_path))
+    elif options.task_id:
+        kill(options.zookeeper, options.zk_path, [options.task_id])
+    else:
+        interactive_mode(options.zookeeper, options.zk_path)
 
 if __name__ == "__main__":
     main()

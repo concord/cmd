@@ -1,4 +1,5 @@
 colorclass==1.2.0
+dcos==0.4.4
 graphviz==0.4.3
 kazoo==2.0
 terminaltables==1.2.0

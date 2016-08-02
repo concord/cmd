@@ -3,11 +3,8 @@ import sys
 import json
 import argparse
 from functools import partial
-from concord_cli.utils import *
-
-CONCORD_DEFAULTS = { 'zookeeper_path' : '/concord',
-                     'zookeeper_hosts' : 'localhost:2181',
-                     'scheduler_address' : 'localhost:11219' }
+from concord.utils import *
+from concord.functional_utils import *
 
 def generate_options():
     parser = argparse.ArgumentParser()

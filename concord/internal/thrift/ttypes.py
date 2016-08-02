@@ -500,6 +500,8 @@ class ExecutorTaskInfoHelper:
    - clientArguments
    - environmentExtra
    - dockerContainer
+   - retries
+   - router
   """
 
   thrift_spec = (
@@ -516,9 +518,11 @@ class ExecutorTaskInfoHelper:
     (10, TType.LIST, 'clientArguments', (TType.STRING,None), None, ), # 10
     (11, TType.LIST, 'environmentExtra', (TType.STRING,None), None, ), # 11
     (12, TType.STRING, 'dockerContainer', None, None, ), # 12
+    (13, TType.I32, 'retries', None, 0, ), # 13
+    (14, TType.STRUCT, 'router', (Endpoint, Endpoint.thrift_spec), None, ), # 14
   )
 
-  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None,):
+  def __init__(self, frameworkLoggingLevel=thrift_spec[1][4], user=None, frameworkVModule=None, scheduler=None, proxy=None, client=None, execName=None, folder=None, computationAliasName=None, clientArguments=None, environmentExtra=None, dockerContainer=None, retries=thrift_spec[13][4], router=None,):
     self.frameworkLoggingLevel = frameworkLoggingLevel
     self.user = user
     self.frameworkVModule = frameworkVModule
@@ -531,6 +535,8 @@ class ExecutorTaskInfoHelper:
     self.clientArguments = clientArguments
     self.environmentExtra = environmentExtra
     self.dockerContainer = dockerContainer
+    self.retries = retries
+    self.router = router
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -614,6 +620,17 @@ class ExecutorTaskInfoHelper:
           self.dockerContainer = iprot.readString().decode('utf-8')
         else:
           iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.I32:
+          self.retries = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.STRUCT:
+          self.router = Endpoint()
+          self.router.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -678,6 +695,14 @@ class ExecutorTaskInfoHelper:
       oprot.writeFieldBegin('dockerContainer', TType.STRING, 12)
       oprot.writeString(self.dockerContainer.encode('utf-8'))
       oprot.writeFieldEnd()
+    if self.retries is not None:
+      oprot.writeFieldBegin('retries', TType.I32, 13)
+      oprot.writeI32(self.retries)
+      oprot.writeFieldEnd()
+    if self.router is not None:
+      oprot.writeFieldBegin('router', TType.STRUCT, 14)
+      self.router.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -699,6 +724,8 @@ class ExecutorTaskInfoHelper:
     value = (value * 31) ^ hash(self.clientArguments)
     value = (value * 31) ^ hash(self.environmentExtra)
     value = (value * 31) ^ hash(self.dockerContainer)
+    value = (value * 31) ^ hash(self.retries)
+    value = (value * 31) ^ hash(self.router)
     return value
 
   def __repr__(self):
@@ -722,6 +749,7 @@ class PhysicalComputationMetadata:
    - disk
    - taskHelper
    - needsReconciliation
+   - killed
   """
 
   thrift_spec = (
@@ -733,9 +761,10 @@ class PhysicalComputationMetadata:
     (5, TType.I32, 'disk', None, None, ), # 5
     (6, TType.STRUCT, 'taskHelper', (ExecutorTaskInfoHelper, ExecutorTaskInfoHelper.thrift_spec), None, ), # 6
     (7, TType.BOOL, 'needsReconciliation', None, None, ), # 7
+    (8, TType.BOOL, 'killed', None, None, ), # 8
   )
 
-  def __init__(self, taskId=None, slaveId=None, cpus=None, mem=None, disk=None, taskHelper=None, needsReconciliation=None,):
+  def __init__(self, taskId=None, slaveId=None, cpus=None, mem=None, disk=None, taskHelper=None, needsReconciliation=None, killed=None,):
     self.taskId = taskId
     self.slaveId = slaveId
     self.cpus = cpus
@@ -743,6 +772,7 @@ class PhysicalComputationMetadata:
     self.disk = disk
     self.taskHelper = taskHelper
     self.needsReconciliation = needsReconciliation
+    self.killed = killed
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -789,6 +819,11 @@ class PhysicalComputationMetadata:
           self.needsReconciliation = iprot.readBool();
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.BOOL:
+          self.killed = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -827,6 +862,10 @@ class PhysicalComputationMetadata:
       oprot.writeFieldBegin('needsReconciliation', TType.BOOL, 7)
       oprot.writeBool(self.needsReconciliation)
       oprot.writeFieldEnd()
+    if self.killed is not None:
+      oprot.writeFieldBegin('killed', TType.BOOL, 8)
+      oprot.writeBool(self.killed)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -843,6 +882,7 @@ class PhysicalComputationMetadata:
     value = (value * 31) ^ hash(self.disk)
     value = (value * 31) ^ hash(self.taskHelper)
     value = (value * 31) ^ hash(self.needsReconciliation)
+    value = (value * 31) ^ hash(self.killed)
     return value
 
   def __repr__(self):
@@ -1637,6 +1677,8 @@ class BoltComputationRequest:
    - taskHelper
    - forceUpdateBinary
    - slug
+   - forcePullContainer
+   - executorArgs
   """
 
   thrift_spec = (
@@ -1649,9 +1691,11 @@ class BoltComputationRequest:
     (6, TType.STRUCT, 'taskHelper', (ExecutorTaskInfoHelper, ExecutorTaskInfoHelper.thrift_spec), None, ), # 6
     (7, TType.BOOL, 'forceUpdateBinary', None, None, ), # 7
     (8, TType.STRING, 'slug', None, None, ), # 8
+    (9, TType.BOOL, 'forcePullContainer', None, True, ), # 9
+    (10, TType.LIST, 'executorArgs', (TType.STRING,None), None, ), # 10
   )
 
-  def __init__(self, name=None, instances=thrift_spec[2][4], cpus=thrift_spec[3][4], mem=thrift_spec[4][4], disk=thrift_spec[5][4], taskHelper=None, forceUpdateBinary=None, slug=None,):
+  def __init__(self, name=None, instances=thrift_spec[2][4], cpus=thrift_spec[3][4], mem=thrift_spec[4][4], disk=thrift_spec[5][4], taskHelper=None, forceUpdateBinary=None, slug=None, forcePullContainer=thrift_spec[9][4], executorArgs=None,):
     self.name = name
     self.instances = instances
     self.cpus = cpus
@@ -1660,6 +1704,8 @@ class BoltComputationRequest:
     self.taskHelper = taskHelper
     self.forceUpdateBinary = forceUpdateBinary
     self.slug = slug
+    self.forcePullContainer = forcePullContainer
+    self.executorArgs = executorArgs
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1711,6 +1757,21 @@ class BoltComputationRequest:
           self.slug = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.BOOL:
+          self.forcePullContainer = iprot.readBool();
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.LIST:
+          self.executorArgs = []
+          (_etype84, _size81) = iprot.readListBegin()
+          for _i85 in xrange(_size81):
+            _elem86 = iprot.readString().decode('utf-8')
+            self.executorArgs.append(_elem86)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1753,6 +1814,17 @@ class BoltComputationRequest:
       oprot.writeFieldBegin('slug', TType.STRING, 8)
       oprot.writeString(self.slug)
       oprot.writeFieldEnd()
+    if self.forcePullContainer is not None:
+      oprot.writeFieldBegin('forcePullContainer', TType.BOOL, 9)
+      oprot.writeBool(self.forcePullContainer)
+      oprot.writeFieldEnd()
+    if self.executorArgs is not None:
+      oprot.writeFieldBegin('executorArgs', TType.LIST, 10)
+      oprot.writeListBegin(TType.STRING, len(self.executorArgs))
+      for iter87 in self.executorArgs:
+        oprot.writeString(iter87.encode('utf-8'))
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1770,6 +1842,8 @@ class BoltComputationRequest:
     value = (value * 31) ^ hash(self.taskHelper)
     value = (value * 31) ^ hash(self.forceUpdateBinary)
     value = (value * 31) ^ hash(self.slug)
+    value = (value * 31) ^ hash(self.forcePullContainer)
+    value = (value * 31) ^ hash(self.executorArgs)
     return value
 
   def __repr__(self):

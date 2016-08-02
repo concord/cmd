@@ -1,13 +1,10 @@
-import os
 import json
 import logging
-from thrift import Thrift
 from kazoo.client import KazooClient
-from concord_cli.generated.concord.internal.thrift.ttypes import *
-from concord_cli.generated.concord.internal.thrift import (
-
-    BoltSchedulerService
-)
+from concord.internal.thrift.ttypes import *
+from concord.internal.thrift import BoltSchedulerService
+from concord.utils import build_logger
+from thrift import Thrift
 from thrift.protocol import (
     TJSONProtocol, TBinaryProtocol
 )
@@ -15,22 +12,8 @@ from thrift.transport import (
     TSocket,TTransport
 )
 
-logging.basicConfig()
-logger = logging.getLogger('cmd.utils')
-logger.setLevel(logging.INFO)
-
-CONCORD_FILENAME = '.concord.cfg'
-
-class ContextDirMgr:
-    def __init__(self, path):
-        self.new_dir = os.path.dirname(os.path.abspath(path))
-
-    def __enter__(self):
-        self.old_dir = os.getcwd()
-        os.chdir(self.new_dir)
-
-    def __exit__(self, value, type, traceback):
-        os.chdir(self.old_dir)
+logging_format_string='%(levelname)s:%(asctime)s %(filename)s:%(lineno)d] %(message)s'
+logger = build_logger('cmd.thrift_utils', logging_format_string)
 
 def bytes_to_thrift(bytes, thrift_struct):
     transportIn = TTransport.TMemoryBuffer(bytes)
@@ -49,7 +32,7 @@ def get_zookeeper_master_ip(zkurl, zkpath):
         logger.debug("Starting zk connection")
         zk.start()
         if not zk.exists(zkpath):
-            logger.error('Path on zk doesn\'t exist')
+            logger.error('Path on zk doesn\'t exist: ' + zkpath)
             return ip
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath + "/masterip")
@@ -97,35 +80,4 @@ def get_sched_service_client(ip, port):
     transport.open()
     return client
 
-def flatten(xs):
-    return reduce(lambda m, x: m + x, xs,[])
 
-def pairs_todict(kvpair_list):
-    """ Transform list -> dict i.e. [a=b, c=d] -> {'a':'b', 'c':'d'}"""
-    return None if kvpair_list is None else \
-    { k:v for k, v in map(lambda c: c.split('='), kvpair_list) }
-
-def find_config(src, config_file):
-    """ recursively searches .. until it finds a file named config_file
-    will return None in the case of no matches or the abspath if found"""
-    filepath = os.path.join(src, config_file)
-    if os.path.isfile(filepath):
-        return filepath
-    elif src == '/':
-        return None
-    else:
-        return find_config(os.path.dirname(src), config_file)
-
-def default_options(opts):
-    location = find_config(os.getcwd(), CONCORD_FILENAME)
-    if location is None:
-        return
-    with open(location, 'r') as data_file:
-        config_data = json.load(data_file)
-    opts_methods = dir(opts)
-    if 'zookeeper' in opts_methods:
-        opts.zookeeper = config_data['zookeeper_hosts']
-    if 'zk_path' in opts_methods:
-        opts.zk_path = config_data['zookeeper_path']
-    if 'scheduler' in opts_methods:
-        opts.scheduler = config_data['scheduler_address']
