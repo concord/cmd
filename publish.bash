@@ -8,7 +8,7 @@ set -e
 cur=$(pwd)
 git_root=$(git rev-parse --show-toplevel)
 
-cd $git_root/cmd
+cd $git_root
 
 # Ensure versions are the same, parse for current version
 version=$(grep 'version' concord/constants.py | awk '{print $3}' | tr -d "'")
@@ -32,7 +32,7 @@ echo "New version:" $new_version
 python setup.py register sdist upload
 
 # Publish dcos concord cli
-cd $git_root/cmd/dcos
+cd $git_root/dcos
 python setup.py register sdist upload
 
 cd $cur
