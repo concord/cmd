@@ -2,7 +2,7 @@
   "zookeeper_hosts": "localhost:2181",
   "zookeeper_path": "/bolt",
   "executable_arguments": ["word_counter.rb"],
-  "executable_name": "./test_dir/runner.bash",
+  "executable_name": "runner.bash",
   "compress_files": ["word_counter.rb", "Gemfile",
                      "Gemfile.lock", "runner.bash"],
   "computation_name": "word-counter",
