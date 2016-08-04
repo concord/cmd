@@ -1,0 +1,41 @@
+{
+  "prompt_args" : [
+    {
+      "flag_name" : "keyspace",
+      "type" : "string",
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : true
+    },
+    {
+      "flag_name" : "table",
+      "type" : "string",	  
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : true
+    },
+    {
+      "flag_name" : "contact_points",
+      "type" : "string",	  
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : false,
+      "default" : "127.0.0.1"
+    },
+    {
+      "flag_name" : "input_streams",
+      "type" : "string",	  
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : true
+    },
+    {
+      "flag_name" : "max_async_inserts",
+      "type" : "number",
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : false,
+      "default" : 10
+    }
+  ]
+}

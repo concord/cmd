@@ -1,4 +1,14 @@
 import os
+import json
+
+class CmdTestException(Exception):
+    pass
+
+def json_from_file(filename):
+    data = None
+    with open(filename) as data_file:
+        data = json.load(data_file)
+    return data
 
 def test_filepath(filepath):
     path = os.path.dirname(os.path.realpath(__file__))

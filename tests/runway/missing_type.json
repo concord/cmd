@@ -1,0 +1,10 @@
+{
+  "prompt_args" : [
+    {
+      "flag_name" : "keyspace",
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : true
+    }
+  ]
+}
