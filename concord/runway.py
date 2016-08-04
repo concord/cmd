@@ -121,6 +121,47 @@ def present_and_select(message, table_metadata, raw_metadata):
         sys.exit(1)
     return user_selection
 
+def simple_prompt(obj):
+    default_str = "None" if 'default' not in obj else obj['default']
+    return raw_input("Argument:{} (default: {}) ".format(obj['flag_name'], default_str))
+
+# Second paramters useful for unit testing this function
+def collect_argument(obj, collection_fn=simple_prompt):
+    """Recusively prompts until valid argument is accepted"""
+    user_input = collection_fn(obj)
+    if user_input == "":
+        if obj['required'] is False:
+            if obj['default'] is None:
+                raise Exception("If required key is false default should exits")
+            return obj['default']
+        else:
+            return collect_argument(obj)
+    else:
+        try:
+            if obj['type'] == "number":
+                user_input = float(user_input)
+            elif obj['type'] == "boolean":
+                user_input = bool(user_input)
+        except Exception as e:
+            logger.error("Could not convert value to expected type... try again")
+            return collect_argument(obj)
+    return user_input
+
+def collect_args(prompt_args):
+    """Method collects arguments defined in 'prompt_args' section of repo metadata"""
+    def construct_flag(obj, user_input):
+        dash = "--" if obj['double_dash'] is True else "-"
+        return dash + obj['flag_name'] + obj['join_char'] + str(user_input)
+
+    logger.info("""Your operator requries that you input values for command line
+    arguments defined in 'propmt_args'.""")
+    logger.info("Hit enter to keep the default, otherwise enter an argument.")
+    new_prompt_args = []
+    for obj in prompt_args:
+        user_input = collect_argument(obj)
+        new_prompt_args.append(construct_flag(obj, user_input))
+    return new_prompt_args
+
 def runway_deploy(connector, ver, parser, options):
     def autogen_name(conn):
         prefix = conn['operator_name'].replace(' ', '_')
@@ -135,6 +176,7 @@ def runway_deploy(connector, ver, parser, options):
         'zookeeper_hosts' : options.zookeeper,
         'zookeeper_path' : options.zk_path,
         'compress_files' : [], # Must append ./runner.bash after call to update()
+        'executable_arguments' : [], # Will optionally append, depends if config file is included
         'docker_container' : '{}/{}:{}'.format(connector['docker_repository'],
                                                connector['docker_container'],
                                                ver['name'])
@@ -151,6 +193,8 @@ def runway_deploy(connector, ver, parser, options):
             parser.error("User manifest cannot contain these keys: " + str(NON_ALLOWED_KEYS))
         runway_manifest.update(user_manifest)
         tmp_manifest_path = os.path.dirname(options.config)
+    elif 'prompt_args' in connector:
+        runway_manifest['executable_arguments'] += collect_args(connector['prompt_args'])
 
     # Create runner script and use that as executable_name
     handle, runner_file = tempfile.mkstemp(dir=tmp_manifest_path, suffix='.bash')

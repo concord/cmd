@@ -1,0 +1,18 @@
+{
+  "prompt_args" : [
+    {
+      "flag_name" : "contact_points",
+      "type" : "string",	  
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : false
+    },
+    {
+      "flag_name" : "max_async_inserts",
+      "type" : "number",
+      "double_dash" : true,
+      "join_char" : "=",
+      "required" : false
+    }
+  ]
+}
