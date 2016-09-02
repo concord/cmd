@@ -1,28 +1,16 @@
 #!/usr/bin/env python
+import json
 from optparse import OptionParser
 from graphviz import Digraph
-from kazoo.client import KazooClient
-from concord.internal.thrift.ttypes import *
-from operator import attrgetter
-
-import json
-import logging
-
-from thrift.protocol import TJSONProtocol, TBinaryProtocol
-from thrift.transport import TTransport
-
-from concord.utils import *
-from concord.thrift_utils import *
+from concord.internal.thrift.ttypes import TopologyMetadata
+from concord.utils import build_logger
+from concord.http_utils import request_topology_map
 
 logger = build_logger('cmd.print_graph')
 
 def generate_options():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
-    parser.add_option("-z", "--zookeeper", dest="zookeeper",
-                      action="store", help="i.e: 1.2.3.4:2181,2.3.4.5:2181")
-    parser.add_option("-p", "--zookeeper_path", dest="zk_path",
-                      help="zookeeper path, i.e.: /concord", action="store")
     parser.add_option("-v", "--verbose",
                       action="store_true", dest="verbose")
     parser.add_option("-q", "--quiet",
@@ -91,10 +79,8 @@ def print_dot(meta, filename):
 def main():
     parser = generate_options()
     (options, args) = parser.parse_args()
-    default_options(options)
 
-    print_dot(get_zookeeper_metadata(options.zookeeper, options.zk_path),
-              options.filename)
+    print_dot(request_topology_map(), options.filename)
 
 if __name__ == "__main__":
     main()

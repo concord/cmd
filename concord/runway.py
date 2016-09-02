@@ -17,7 +17,7 @@ from datetime import datetime
 from terminaltables import AsciiTable
 from concord.deploy import (parseFile, register)
 from concord.functional_utils import (find_first_of, flat_map)
-from concord.utils import (build_logger, default_options, docker_metadata)
+from concord.utils import (build_logger, docker_metadata)
 from concord.utils import CONCORD_DEFAULTS
 
 logger = build_logger('cmd.runway')
@@ -38,12 +38,6 @@ def generate_options():
     parser = argparse.ArgumentParser(description=HELP_TXT)
     parser.add_argument("-c", "--config", metavar="config-file", action="store",
                         help="i.e: ./src/config.json")
-    parser.add_argument("-p", "--zk_path", metavar="zookeeper-path",
-                        help="Path of concord topology on zk", action="store")
-    parser.add_argument("-z", "--zookeeper", metavar="zookeeper-hosts",
-                        help="i.e: 1.2.3.4:2181,2.3.4.5:2181", action="store")
-    parser.add_argument("-r", "--repository", metavar="repo-url", action="store",
-                        help="URL to a runway repository")
     return parser
 
 def validate_enrich_metadata(metadata):
@@ -239,7 +233,6 @@ def construct_runway_url(repo_url):
 def main():
     parser = generate_options()
     options = parser.parse_args()
-    default_options(options)
     runway_url = construct_runway_url(options.repository)
 
     # 1. Parse runway metadata, ensure it is matches with hub.docker.com, present list to user

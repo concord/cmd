@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import os #environ
-import sys
+import os # environ
+import sys # exit
 import concord.kill_task, concord.print_graph, concord.runway
 import concord.marathon, concord.deploy, concord.config
 from concord import constants
+from concord.utils import find_config
 from argparse import ArgumentParser
 from pkg_resources import resource_string
 from dcos_utils import *
@@ -49,6 +50,10 @@ def main():
     # Remove 'concord' string if on DC/OS
     if ON_DCOS is True:
         program_options = program_options[1:]
+        # TODO: Ensure options are configured in 'dcos config'
+    elif find_config() is None:
+        print "Config file not initialized, please run 'concord config init' first"
+        sys.exit(1)
 
     if options.info is True:
         print 'Deploy and manage Concord operators'

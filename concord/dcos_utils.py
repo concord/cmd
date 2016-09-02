@@ -30,4 +30,5 @@ def dcos_config_data():
     config_data = {}
     config_data['zookeeper_hosts'] = util.get_config().get('concord.zookeeper_hosts')
     config_data['zookeeper_path'] = util.get_config().get('concord.zk_path')
+    config_data['runway_repository'] = util.get_config().get('concord.runway_repository')
     return config_data

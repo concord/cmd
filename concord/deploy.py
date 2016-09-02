@@ -43,14 +43,12 @@ import os
 import re
 import json
 import tarfile
-import logging
 import argparse
 import uuid
-from kazoo.client import KazooClient
-from concord.internal.thrift.ttypes import *
+from concord.internal.thrift.ttypes import BoltComputationRequest
 from concord.utils import *
-from concord.thrift_utils import *
 from concord.functional_utils import *
+from concord.http_utils import request_create_operator
 
 logger = build_logger('cmd.deploy')
 
@@ -192,6 +190,11 @@ def build_thrift_request(request):
         logger.debug("Removing slug %s", tar_name)
         os.remove(tar_name)
 
+
+    def thrift_to_json(thrift_struct):
+        return json.dumps(thrift_struct, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
     logger.debug("Making request object")
     req = BoltComputationRequest()
     req.name = request["computation_name"]
@@ -220,18 +223,9 @@ def build_thrift_request(request):
 def register(request, config):
     with ContextDirMgr(config):
         req = build_thrift_request(request)
-        logger.debug("Getting master ip from zookeeper")
-        ip = get_zookeeper_master_ip(
-            request["zookeeper_hosts"], request["zookeeper_path"])
-        (addr, port) = ip.split(":")
-
-        logger.info("Sending computation to: %s" % ip)
-
-        cli = get_sched_service_client(addr,int(port))
-        logger.debug("Sending request to scheduler")
-        cli.deployComputation(req)
-        logger.debug("Done sending request to server")
-        logger.info("Verify with the mesos host: %s that the service is running" % addr)
+        request_create_operator(req)
+        # TODO: Insert mesos host IP
+        logger.info("Verify with the mesos host that the service is running")
 
 def main():
     parser = generate_options()

@@ -15,7 +15,7 @@ DEFAULT_MARATHON = {
     "container": {
         "type": "DOCKER",
         "docker": {
-            "image": "concord/scheduler:0.3.16.4",
+            "image": "concord/scheduler:0.4.3.2",
             "network": "HOST"
         }
     }

@@ -1,27 +1,17 @@
 #!/usr/bin/env python
 import sys
-import thrift
-import logging
 import argparse
-from concord.utils import *
-from concord.thrift_utils import *
 from concord.functional_utils import *
 from terminaltables import AsciiTable
+from concord.http_utils import (
+    request_delete_all,
+    request_delete_operator
+)
 
 logger = build_logger('cmd.kill_task')
 
 def generate_options():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p"
-                        ,"--zk_path"
-                        ,metavar="zookeeper-path"
-                        ,help="Path of concord topology on zk"
-                        ,action="store")
-    parser.add_argument("-z"
-                        ,"--zookeeper"
-                        ,metavar="zookeeper-hosts"
-                        ,help="i.e: 1.2.3.4:2181,2.3.4.5:2181"
-                        ,action="store")
     parser.add_argument("-t"
                         ,"--task_id"
                         ,help="The id of task to kill"
@@ -35,39 +25,21 @@ def generate_options():
 def validate_options(options, parser):
     if options.all and options.task_id:
         parser.error('You are using task_id and passing the all flag')
-    default_options(options)
 
-def kill(zookeeper, zk_path, task_ids):
+def kill(task_ids):
     if len(task_ids) == 0:
         logger.info('Kill received an empty list of task_ids')
         return
-    logger.info("Getting master ip from zookeeper")
-    ip = get_zookeeper_master_ip(zookeeper, zk_path)
-    logger.info("Found leader at: %s" % ip)
-    (addr, port) = ip.split(":")
-    logger.info("Initiating connection to scheduler")
-    cli = get_sched_service_client(addr,int(port))
-    logger.info("Sending request to scheduler")
     try:
         for task_id in task_ids:
             logger.info('Sending request to kill task: %s', task_id)
-            cli.killTask(task_id)
-    except thrift.Thrift.TApplicationException as e:
+            request_delete_operator(task_id)
+    except Exception as e:
         leftover = task_ids[task_ids.index(task_id):]
         logger.error("Error killing task: %s" % task_id)
         logger.error("Tasks that could not be killed... %s" % ", ".join(leftover))
         logger.exception(e)
     logger.info("Done sending request to server")
-
-def collect_taskids(zookeeper, zkpath):
-    """ Querys zk for topology metadata and returns a list of task_ids"""
-    meta = get_zookeeper_metadata(zookeeper, zkpath)
-    if meta is None or len(meta.computations) == 0:
-        return []
-
-    # Obtain taskids from list of nodes from list of computations then flatten
-    return flatten([list(d.taskId for d in c.nodes) \
-                    for c in meta.computations.values()])
 
 def parse_input(iterable, user_input):
     """ Parses user input and either will abort or return the data at
@@ -146,11 +118,11 @@ def prompt_computations(pcomp_layout):
     selection = prompt_selection(pcomp_layout, header, layout_printable)
     return flatten(map(lambda c: c.nodes, selection))
 
-def interactive_mode(zookeeper, zk_path):
+def interactive_mode():
     """ presents to the user an easy to use prompt so that they may selectively
     search through computations and eventually choose a concord node to kill"""
     print 'Querying zookeeper for cluster topology...'
-    meta = get_zookeeper_metadata(zookeeper, zk_path)
+    meta = request_topology_map()
 
     # Exit on failure, or if no computations exist
     if meta == None:
@@ -166,20 +138,19 @@ def interactive_mode(zookeeper, zk_path):
         selection = current_action(selection)
 
     # Terminate selected node
-    kill(zookeeper, zk_path, selection)
+    kill(selection)
 
 def main():
     parser = generate_options()
     options = parser.parse_args()
     validate_options(options, parser)
-
+    
     if options.all:
-        kill(options.zookeeper, options.zk_path,
-             collect_taskids(options.zookeeper, options.zk_path))
+        request_delete_all()
     elif options.task_id:
-        kill(options.zookeeper, options.zk_path, [options.task_id])
+        kill([options.task_id])
     else:
-        interactive_mode(options.zookeeper, options.zk_path)
+        interactive_mode()
 
 if __name__ == "__main__":
     main()
