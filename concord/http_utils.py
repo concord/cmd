@@ -4,6 +4,7 @@ from thrift import TSerialization
 from zookeeper_utils import get_scheduler_master_url
 from dcos_utils import * 
 from dcos import http # http.request
+from thrift import TSerialization
 from concord.internal.thrift.ttypes import (
     BoltComputationRequest,
     TopologyMetadata
@@ -12,13 +13,13 @@ from concord.internal.thrift.ttypes import (
 logger = build_logger('cmd.http_utils')
 
 def _http_request_url(slash_command):
-    # if ON_DCOS: blah blah
+    # TODO: if ON_DCOS ...
     url = get_scheduler_master_url(get_config().get('zookeeper_hosts'),
                                    get_config().get('zookeeper_path'))
     if url is None:
         logger.critical("Failed when retrieving url from zk")
         raise Exception("Could not retrieve master schedulers url")
-    return url.rstrip('/') + '/concord' # Get svc name
+    return url.rstrip('/') + slash_command
 
 def _http_request_json(method, slash_command, **kwargs):
     request_url = _http_request_url(slash_command)
@@ -39,7 +40,6 @@ def _http_request_json(method, slash_command, **kwargs):
         raise e
         
 def request_topology_map():
-    # Returns: TopologyMetadata structure
     return deserialize(_http_request_json('get', '/concord'))
 
 def request_exists_operator(operator_id):

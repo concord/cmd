@@ -3,7 +3,9 @@ import sys
 import argparse
 from concord.functional_utils import *
 from terminaltables import AsciiTable
+from concord.utils import build_logger
 from concord.http_utils import (
+    request_topology_map,
     request_delete_all,
     request_delete_operator
 )

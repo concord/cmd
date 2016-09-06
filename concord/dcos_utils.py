@@ -27,6 +27,8 @@ def dcos_options(parser):
 
 def dcos_config_data():
     """Fetches config data from dcos schema"""
+    # TODO: Better to include utils.py and fetch keys with CONCORD_DEFAULTS.keys
+    # However, including this file will create circular dependency. Break out later.
     config_data = {}
     config_data['zookeeper_hosts'] = util.get_config().get('concord.zookeeper_hosts')
     config_data['zookeeper_path'] = util.get_config().get('concord.zk_path')
