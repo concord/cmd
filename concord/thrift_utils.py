@@ -1,5 +1,6 @@
 import json
 import logging
+import zlib
 from kazoo.client import KazooClient
 from concord.internal.thrift.ttypes import *
 from concord.internal.thrift import BoltSchedulerService
@@ -31,7 +32,7 @@ def get_zookeeper_master_ip(zkurl, zkpath):
     try:
         logger.debug("Starting zk connection")
         zk.start()
-        if not zk.exists(zkpath):
+        if not zk.exists(zkpath + "/masterip"):
             logger.error('Path on zk doesn\'t exist: ' + zkpath)
             return ip
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
@@ -57,6 +58,7 @@ def get_zookeeper_metadata(zkurl, zkpath):
             return None
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath)
+        data = zlib.decompress(bytes(data), 15+32)
         logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
         bytes_to_thrift(data, meta)
     except Exception as e:
