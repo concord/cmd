@@ -58,7 +58,7 @@ def get_zookeeper_metadata(zkurl, zkpath):
             return None
         logger.debug("Serializing TopologyMetadata() from %s" % zkpath)
         data, stat = zk.get(zkpath)
-        data = zlib.decompress(bytes(data), 15+32)
+        data = zlib.decompress(bytes(data), 15+32) # Autodetect compression format (should be gzip)
         logger.debug("Status of 'getting' %s: %s" % (zkpath, str(stat)))
         bytes_to_thrift(data, meta)
     except Exception as e:
