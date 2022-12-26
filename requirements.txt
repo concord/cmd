@@ -5,4 +5,4 @@ kazoo==2.0
 terminaltables==1.2.0
 thrift==0.9.2
 trace2html==0.2.1
-wheel==0.24.0
+wheel==0.38.1
